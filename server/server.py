@@ -59,6 +59,14 @@ def get_nodes(db):
 		nodes.append( { "id": row['id'], "name": row['name'] } )
 	return json.dumps( nodes )
 
+@app.get('/nodeinfo/:node')
+def get_nodes(node, db):
+	rows = db.execute('SELECT DISTINCT key from data where node=?', (node,)).fetchall()
+	keys = []
+	for row in rows:
+		keys.append( row['key'] )
+	return json.dumps( keys )
+
 @app.route('/static/<filename:path>')
 def server_static(filename):
     return static_file(filename, root='static/')
