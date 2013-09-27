@@ -3,6 +3,8 @@ import time
 import json
 import sys
 import psutil
+from datacollectors import *
+collectors = ss_collect.collectors
 
 def run():
 	global cfg
@@ -44,8 +46,7 @@ def get_data():
 	global cfg
 	data = {}
 	for val in cfg['data']:
-		if val == "cpu_percent":
-			data['cpu_percent'] = psutil.cpu_percent( interval=1, percpu=True )
+		data[val] = collectors[val]()
 	return data
 run()
 	
