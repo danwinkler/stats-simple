@@ -2,7 +2,7 @@ var node;
 var dataType;
 
 var width = 800;
-var height = 600;
+var height = 200;
 
 var g;
 
@@ -14,14 +14,17 @@ $(function() {
 		success: nodesData
 	});
 	
-	$("canvas").attr( "width", width );
-	$("canvas").attr( "height", height );
-	
+	$("#time-frame").change(function() {
+		$.ajax({ url: "/data/"+node+"/"+dataType+"/"+$("#time-frame").val(),
+			dataType: "json",
+			success: graph
+		});
+	});
 });
 
 function nodesData(data, textStatus, jqXHR) 
 {
-	$("#node-list").empty();
+	$("#node-list-content").empty();
 	for( var i = 0; i < data.length; i++ )
 	{
 		var c = "node-item-" + data[i]['id'];
@@ -31,22 +34,22 @@ function nodesData(data, textStatus, jqXHR)
 		html += '<span class="node-name">' + data[i]['name'] + '</span>';
 		html += '<a href="javascript:;" class="node-link">View</a>';
 		html += '</div>';
-		$("#node-list").append( html );
-		var url = "/nodeinfo/"+data[i]['id'];
-		var cnode = data[i]['id'];
-		$("." + c + " .node-link").click(function() {
-			node = cnode;
+		$("#node-list-content").append( html );
+		$("." + c + " .node-link").on( "click", { node: data[i]['id'], url: "/nodeinfo/"+data[i]['id'] }, function( event ) {
+			node = event.data.node;
+			var url = event.data.url;
 			$.ajax({ url: url,
 				dataType: "json",
 				success: nodeInfo
 			});
 		});
 	}
+	$("#node-list-content .node-item").last().addClass( "node-item-last" );
 }
 
 function nodeInfo(data, textStatus, jqXHR) 
 {
-	$("#info-list").empty();
+	$("#info-list-content").empty();
 	for( var i = 0; i < data.length; i++ )
 	{
 		var c = "info-item-" + data[i];
@@ -55,23 +58,24 @@ function nodeInfo(data, textStatus, jqXHR)
 		html += '<span class="info-key">' + data[i] + '</span>';
 		html += '<a href="javascript:;" class="info-link">View</a>';
 		html += '</div>';
-		$("#info-list").append( html );
-		var url = "/data/"+node+"/"+data[i];
-		var cdataType = data[i];
-		$("." + c + " .info-link").click(function() {
-			dataType = cdataType;
+		$("#info-list-content").append( html );
+		var url = "/data/"+node+"/"+data[i]+"/"+$("#time-frame").val();
+		$("." + c + " .info-link").on( "click", { dataType: data[i], url: url }, function( event ) {
+			dataType = event.data.dataType;
+			var url = event.data.url;
 			$.ajax({ url: url,
 				dataType: "json",
 				success: graph
 			});
 		});
 	}
+	$("#info-list-content .info-item").last().addClass( "info-item-last" );
+	$("#info-list").slideDown();
 }
 
 function graph( data, textStatus, jqXHR )
 {
-	var canvas = document.getElementById("main-canvas");
-	g = canvas.getContext("2d");
-	
 	renderFunctions[dataType]( data );
+	
+	$("#main-canvas-wrapper").slideDown();
 }

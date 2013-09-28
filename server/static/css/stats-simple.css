@@ -1,0 +1,110 @@
+body {
+	font-family: 'Open Sans', sans-serif;
+}
+
+#node-list {
+	padding: 10px;
+	border: 1px solid grey;
+	width: 860px;
+	border-radius: 6px;
+	margin-bottom: 10px;
+}
+
+.node-item {
+	position: relative;
+	border-bottom: 1px dashed grey;
+	height: 22px;
+}
+
+.node-item-header {
+	border-bottom: 2px solid grey;
+	height: 22px;
+	margin-bottom: 10px;
+}
+
+.node-item-last {
+	border: none;
+}
+
+.node-id {
+	position: absolute;
+}
+
+.node-name {
+	position: absolute;
+	left: 50px;
+}
+
+.node-link {
+	position: absolute;
+	left: 400px;
+}
+
+.node-link {
+	text-decoration: none;
+}
+
+#info-list {
+	padding: 10px;
+	border: 1px solid grey;
+	width: 860px;
+	border-radius: 6px;
+	display: none;
+	margin-bottom: 10px;
+}
+
+.info-item {
+	position: relative;
+	border-bottom: 1px dashed grey;
+	height: 22px;
+}
+
+.info-item-header {
+	border-bottom: 2px solid grey;
+	height: 22px;
+	margin-bottom: 10px;
+}
+
+.info-item-last {
+	border: none;
+}
+
+.info-name {
+	position: absolute;
+}
+
+.info-link {
+	position: absolute;
+	left: 400px;
+}
+
+.info-link {
+	text-decoration: none;
+}
+
+
+#main-canvas-wrapper {
+	padding: 10px;
+	border: 1px solid grey;
+	border-radius: 6px;
+	width: 860px;
+	display: none;
+}
+
+.select-wrapper {
+	margin-bottom: 10px;
+}
+
+#y-axis {
+	float: left;
+	width: 40px;
+	height: 200px
+}
+
+#chart {
+	float: left;
+}
+
+.chart-clear {
+	clear: both;
+}
