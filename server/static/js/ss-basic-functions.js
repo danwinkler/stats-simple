@@ -21,7 +21,7 @@ function render_cpu_percent( data )
 		element: document.querySelector("#chart"),
 		width: width,
 		height: height,
-		renderer: 'line',
+		renderer: 'stack',
 		series: series
 	} );
 	

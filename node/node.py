@@ -27,8 +27,11 @@ def run():
 				print re['error']
 				if( re['error'] == "NO_REG" ):
 					server_reg()
+			elif "success" in re:
+				print "Successfully sent data"
 			time.sleep( cfg['interval'] )
-		except Error:
+		except (urllib2.HTTPError, IOError) as e:
+			print "Failed to send: " + str(e)
 			time.sleep( cfg['interval'] )
 
 def server_reg():
@@ -44,7 +47,10 @@ def server_reg():
 			elif 'success' in re:
 				print re['success']
 				break
-		except Error:
+			else:
+				print "Bad response from server"
+		except (urllib2.HTTPError, IOError) as e:
+			print "Failed to Connect, Will try again in 10 seconds: " + str(e)
 			time.sleep( 10 )
 
 def do_post( url, values ):
@@ -57,10 +63,14 @@ def do_post( url, values ):
 	return response.read()
 	
 def get_data():
-	global cfg
-	data = {}
-	for val in cfg['data']:
-		data[val] = collectors[val]()
-	return data
+	try:
+		global cfg
+		data = []
+		for val in cfg['data']:
+			data.append( {"name": val[0], "type": val[1], "data": (collectors[val[1]]() if len(val)==2 else collectors[val[1]](val[2])) } )
+		return data
+	except KeyError as e:
+		sys.exit( "Incorrect data collector type in node.cfg: " + str(e) )
+	
 run()
 	

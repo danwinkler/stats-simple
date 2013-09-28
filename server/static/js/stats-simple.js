@@ -52,15 +52,15 @@ function nodeInfo(data, textStatus, jqXHR)
 	$("#info-list-content").empty();
 	for( var i = 0; i < data.length; i++ )
 	{
-		var c = "info-item-" + data[i];
+		var c = "info-item-" + data[i]['name'];
 		var html = "";
 		html += '<div class="info-item ' + c + '">';
-		html += '<span class="info-key">' + data[i] + '</span>';
+		html += '<span class="info-key">' + data[i]['name'].replace("_", " ") + '</span>';
 		html += '<a href="javascript:;" class="info-link">View</a>';
 		html += '</div>';
 		$("#info-list-content").append( html );
-		var url = "/data/"+node+"/"+data[i]+"/"+$("#time-frame").val();
-		$("." + c + " .info-link").on( "click", { dataType: data[i], url: url }, function( event ) {
+		var url = "/data/"+node+"/"+data[i]['name']+"/"+$("#time-frame").val();
+		$("." + c + " .info-link").on( "click", { dataType: data[i]['type'], url: url }, function( event ) {
 			dataType = event.data.dataType;
 			var url = event.data.url;
 			$.ajax({ url: url,
@@ -75,6 +75,8 @@ function nodeInfo(data, textStatus, jqXHR)
 
 function graph( data, textStatus, jqXHR )
 {
+	$("#chart").empty();
+	$("#y-axis").empty();
 	renderFunctions[dataType]( data );
 	
 	$("#main-canvas-wrapper").slideDown();
