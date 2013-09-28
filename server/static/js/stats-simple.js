@@ -1,5 +1,6 @@
 var node;
 var dataType;
+var dataName;
 
 var width = 800;
 var height = 200;
@@ -15,7 +16,7 @@ $(function() {
 	});
 	
 	$("#time-frame").change(function() {
-		$.ajax({ url: "/data/"+node+"/"+dataType+"/"+$("#time-frame").val(),
+		$.ajax({ url: "/data/"+node+"/"+dataName+"/"+$("#time-frame").val(),
 			dataType: "json",
 			success: graph
 		});
@@ -55,13 +56,14 @@ function nodeInfo(data, textStatus, jqXHR)
 		var c = "info-item-" + data[i]['name'];
 		var html = "";
 		html += '<div class="info-item ' + c + '">';
-		html += '<span class="info-key">' + data[i]['name'].replace("_", " ") + '</span>';
+		html += '<span class="info-key">' + data[i]['name'].replace(/_/g, " ") + '</span>';
 		html += '<a href="javascript:;" class="info-link">View</a>';
 		html += '</div>';
 		$("#info-list-content").append( html );
 		var url = "/data/"+node+"/"+data[i]['name']+"/"+$("#time-frame").val();
-		$("." + c + " .info-link").on( "click", { dataType: data[i]['type'], url: url }, function( event ) {
+		$("." + c + " .info-link").on( "click", { dataType: data[i]['type'], dataName: data[i]['name'], url: url }, function( event ) {
 			dataType = event.data.dataType;
+			dataName = event.data.dataName;
 			var url = event.data.url;
 			$.ajax({ url: url,
 				dataType: "json",
