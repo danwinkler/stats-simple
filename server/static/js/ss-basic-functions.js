@@ -168,3 +168,59 @@ function render_web_response_time( data )
 	graph.render();
 }
 renderFunctions['web_response_time'] = render_web_response_time;
+
+function render_all_disks( data ) 
+{
+	if( data.length < 1 ) return;
+	
+	var types = ['total','used','free','percent'];
+	var palette = new Rickshaw.Color.Palette();
+	var series = [];
+	
+	for( var i = 0; i < data.length; i++ )
+	{
+		for( var disk in data[i]['value'] )
+		{
+			var x = data[i]['time'];
+			var y = data[i]['value'][disk]['percent'];
+			var foundS = false;
+			for( var j = 0; j < series.length; j++ )
+			{
+				if( series[j].name == disk )
+				{
+					series[j].data.push( { x: x, y: y } );
+					founds = true;
+					break;
+				}
+			}
+			if( !foundS ) 
+			{
+				series.push( { name: disk, data: [{ x: x, y: y }], color: palette.color() } );
+			}
+		}
+	}
+	
+	var graph = new Rickshaw.Graph( {
+		element: document.querySelector("#chart"),
+		width: width,
+		height: height,
+		renderer: 'line',
+		series: series
+	} );
+	
+	var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );
+
+	var y_axis = new Rickshaw.Graph.Axis.Y( {
+		graph: graph,
+		orientation: 'left',
+		tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+		element: document.getElementById('y-axis'),
+	} );
+	
+	new Rickshaw.Graph.HoverDetail( {
+		graph: graph
+	} );
+	
+	graph.render();
+}
+renderFunctions['all_disks'] = render_all_disks;
