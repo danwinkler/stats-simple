@@ -10,6 +10,10 @@
 		<script src="/static/js/rickshaw.js"></script>
 		<script src="/static/js/stats-simple.js"></script>
 		<script src="/static/js/ss-basic-functions.js"></script>
+		<script>
+			var screenInfo = {{!data}};
+			var nodeSelect = {{user_select}};
+		</script>
 	</head>
 	<body>
 		<h1>Stats-Simple</h1>
@@ -23,25 +27,7 @@
 		<div id="info-list">
 			<div id="info-list-content"></div>
 		</div>
-		<div id="main-canvas-wrapper">
-			<div class="select-wrapper">
-				<select id="time-frame">
-					<option value="hour:1">Last Hour</option>
-					<option value="hour:2">Last 2 Hours</option>
-					<option value="hour:3">Last 3 Hours</option>
-					<option value="hour:6">Last 6 Hours</option>
-					<option value="day:1">Last Day</option>
-					<option value="day:3">Last 3 Days</option>
-					<option value="day:7">Last Week</option>
-					<option value="month:1">Last Month</option>
-					<option value="month:6">Last 6 Months</option>
-					<option value="month:12">Last Year</option>
-					<option value="forever:0">Forever</option>
-				</select>
-			</div>
-			<div id="y-axis"></div>
-			<div id="chart"></div>
-			<div class="chart-clear"></div>
+		<div id="chart-display">
 		</div>
 	</body>
 </html>

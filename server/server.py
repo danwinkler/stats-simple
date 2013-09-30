@@ -87,7 +87,17 @@ def get_nodes(db):
 	for row in rows:
 		nodes.append( { "id": row['id'], "name": row['name'] } )
 	return json.dumps( nodes )
+	
+@app.get('/nodeid/:name')
+def get_node_id(name,db):
+	row = db.execute('SELECT id from nodes where name=?', (name,)).fetchone()
+	return json.dumps( row['id'] )
 
+@app.get('/typeof/:name')
+def get_typeof(name, db):
+	row = db.execute('SELECT DISTINCT name, type from data where name=?', (name,)).fetchone()
+	return json.dumps( row['type'] )
+	
 @app.get('/nodeinfo/:node')
 def get_nodes(node, db):
 	rows = db.execute('SELECT DISTINCT name, type from data where node=?', (node,)).fetchall()
@@ -101,9 +111,10 @@ def get_nodes(node, db):
 def server_static(filename):
     return static_file(filename, root='static/')
 
+@app.route('/screens/:screen')
 @app.route('/')
-def index():
-    return static_file("index.html", root='static/')
+def index(screen=None):
+    return template("index", { "user_select": json.dumps( screen == None ), "data": json.dumps( cfg["screens"][screen] ) if screen!=None else "[]" } )
 
 def check_secret():
 	global cfg

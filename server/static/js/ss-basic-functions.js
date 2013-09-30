@@ -1,4 +1,4 @@
-function render_cpu_percent( data ) 
+function render_cpu_percent( data, element ) 
 {
 	if( data.length < 1 ) return;
 	
@@ -18,7 +18,7 @@ function render_cpu_percent( data )
 	}
 	
 	var graph = new Rickshaw.Graph( {
-		element: document.querySelector("#chart"),
+		element: $(".chart", element).get(0),
 		width: width,
 		height: height,
 		renderer: 'stack',
@@ -31,7 +31,7 @@ function render_cpu_percent( data )
 		graph: graph,
 		orientation: 'left',
 		tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-		element: document.getElementById('y-axis'),
+		element: $(".y-axis", element).get(0),
 	} );
 	
 	new Rickshaw.Graph.HoverDetail( {
@@ -42,7 +42,7 @@ function render_cpu_percent( data )
 }
 renderFunctions['cpu_percent'] = render_cpu_percent;
 
-function render_virtual_memory( data ) 
+function render_virtual_memory( data, element ) 
 {
 	if( data.length < 1 ) return;
 	
@@ -63,7 +63,7 @@ function render_virtual_memory( data )
 	
 	
 	var graph = new Rickshaw.Graph( {
-		element: document.querySelector("#chart"),
+		element: $(".chart", element).get(0),
 		width: width,
 		height: height,
 		renderer: 'stack',
@@ -76,7 +76,7 @@ function render_virtual_memory( data )
 		graph: graph,
 		orientation: 'left',
 		tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-		element: document.getElementById('y-axis'),
+		element: $(".y-axis", element).get(0),
 	} );
 	
 	new Rickshaw.Graph.HoverDetail( {
@@ -87,7 +87,7 @@ function render_virtual_memory( data )
 }
 renderFunctions['virtual_memory'] = render_virtual_memory;
 
-function render_swap_memory( data ) 
+function render_swap_memory( data, element ) 
 {
 	if( data.length < 1 ) return;
 	
@@ -105,7 +105,7 @@ function render_swap_memory( data )
 	series.push( { name: "Percent of Memory Used", data: rickData, color: palette.color() } );
 	
 	var graph = new Rickshaw.Graph( {
-		element: document.querySelector("#chart"),
+		element: $(".chart", element).get(0),
 		width: width,
 		height: height,
 		renderer: 'stack',
@@ -118,7 +118,7 @@ function render_swap_memory( data )
 		graph: graph,
 		orientation: 'left',
 		tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-		element: document.getElementById('y-axis'),
+		element: $(".y-axis", element).get(0),
 	} );
 	
 	new Rickshaw.Graph.HoverDetail( {
@@ -129,7 +129,7 @@ function render_swap_memory( data )
 }
 renderFunctions['swap_memory'] = render_swap_memory;
 
-function render_web_response_time( data ) 
+function render_web_response_time( data, element ) 
 {
 	if( data.length < 1 ) return;
 	
@@ -145,7 +145,7 @@ function render_web_response_time( data )
 	series.push( { name: "Response Time", data: rickData, color: palette.color() } );
 	
 	var graph = new Rickshaw.Graph( {
-		element: document.querySelector("#chart"),
+		element: $(".chart", element).get(0),
 		width: width,
 		height: height,
 		renderer: 'stack',
@@ -158,7 +158,7 @@ function render_web_response_time( data )
 		graph: graph,
 		orientation: 'left',
 		tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-		element: document.getElementById('y-axis'),
+		element: $(".y-axis", element).get(0),
 	} );
 	
 	new Rickshaw.Graph.HoverDetail( {
@@ -169,7 +169,7 @@ function render_web_response_time( data )
 }
 renderFunctions['web_response_time'] = render_web_response_time;
 
-function render_all_disks( data ) 
+function render_all_disks( data, element ) 
 {
 	if( data.length < 1 ) return;
 	
@@ -201,7 +201,7 @@ function render_all_disks( data )
 	}
 	
 	var graph = new Rickshaw.Graph( {
-		element: document.querySelector("#chart"),
+		element: $(".chart", element).get(0),
 		width: width,
 		height: height,
 		renderer: 'line',
@@ -214,7 +214,7 @@ function render_all_disks( data )
 		graph: graph,
 		orientation: 'left',
 		tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-		element: document.getElementById('y-axis'),
+		element: $(".y-axis", element).get(0),
 	} );
 	
 	new Rickshaw.Graph.HoverDetail( {

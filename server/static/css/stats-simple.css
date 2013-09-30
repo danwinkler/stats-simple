@@ -8,6 +8,7 @@ body {
 	width: 860px;
 	border-radius: 6px;
 	margin-bottom: 10px;
+	display: none;
 }
 
 .node-item {
@@ -82,26 +83,31 @@ body {
 	text-decoration: none;
 }
 
+#chart-display {
+	padding: 10px;
+	border: 1px solid grey;
+	border-radius: 6px;
+	display: inline-block;
+}
 
-#main-canvas-wrapper {
+.chart-wrapper {
 	padding: 10px;
 	border: 1px solid grey;
 	border-radius: 6px;
 	width: 860px;
-	display: none;
 }
 
 .select-wrapper {
 	margin-bottom: 10px;
 }
 
-#y-axis {
+.y-axis {
 	float: left;
 	width: 40px;
 	height: 200px
 }
 
-#chart {
+.chart {
 	float: left;
 }
 

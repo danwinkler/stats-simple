@@ -1,9 +1,15 @@
 from ss_collect import *
 import psutil
 import requests
+import sys
 
 def web_response_time_collector(args):
-	response = requests.get(args)
-	return float(str(response.elapsed).split(":")[2])
+	try:
+		response = requests.get(args)
+		return float(str(response.elapsed).split(":")[2])
+	except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError, requests.exceptions.TooManyRedirects, requests.exceptions.Timeout) as e:
+		return 0;
+	except requests.exceptions.URLRequired:
+		sys.exit( "Invalid URL for web_response_time" )
 
 collectors['web_response_time'] = web_response_time_collector
