@@ -33,3 +33,7 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+#stats-simple specific
+node/node.cfg
+server/server.cfg
