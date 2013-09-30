@@ -12,17 +12,9 @@ j = f.read()
 f.close()
 cfg = json.loads( j )
 
-def fix_environ_middleware(app):
-	def fixed_app(environ, start_response):
-		environ['wsgi.url_scheme'] = cfg['host'].split("://")[0]
-		environ['HTTP_X_FORWARDED_HOST'] = cfg['host'].split("://")[1]
-		return app(environ, start_response)
-	return https_app
-
 app = bottle.Bottle()
 plugin = sqlite.Plugin(dbfile='db.db')
 app.install(plugin)
-app.wsgi = fix_environ_middleware(app.wsgi)
 
 @app.post('/register')
 def register(db):
