@@ -111,7 +111,7 @@ def get_nodes(node, db):
 def server_static(filename):
 	while( filename.startswith( "/" ) ):
 		filename = filename[1:]
-    return static_file(filename, root='static/')
+	return static_file(filename, root='static/')
 
 @app.route('/screens/:screen')
 @app.route('/')
