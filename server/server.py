@@ -114,7 +114,7 @@ def server_static(filename):
 @app.route('/screens/:screen')
 @app.route('/')
 def index(screen=None):
-    return template("index", { "user_select": json.dumps( screen == None ), "data": json.dumps( cfg["screens"][screen], "root": cfg['webpath'] ) if screen!=None else "[]" } )
+    return template("index", { "user_select": json.dumps( screen == None ), "data": json.dumps( cfg["screens"][screen] ) if screen!=None else "[]", "root": cfg['webpath'] } )
 
 def check_secret():
 	global cfg
