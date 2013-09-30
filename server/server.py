@@ -27,11 +27,11 @@ def register(db):
 		return json.dumps( { "error": "NO_NAME" } )
 	row = db.execute('SELECT * from nodes where name=?', (name,)).fetchone()
 	if row:
-		ssprint( "Register Success: Already Registered: " + str(row['id']) )
+		ssprint( "Register Success: Already Registered: " + str(row['name']) )
 		return json.dumps( { "success": "ALREADY_REGISTERED" } )
 	else:
 		db.execute('INSERT into nodes (name) VALUES (?)', (name,))
-		ssprint( "Register Success: First time register: " + str(row['id']) )
+		ssprint( "Register Success: First time register: " + str( name ) )
 		return json.dumps( { "success": "REGISTERED" } )
 
 @app.post('/data')
