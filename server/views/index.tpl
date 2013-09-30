@@ -2,14 +2,14 @@
 	<head>
 		<title>stats-simple</title>
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-		<link rel="stylesheet" type="text/css" href="/static/css/rickshaw.css">
-		<link rel="stylesheet" type="text/css" href="/static/css/stats-simple.css">
+		<link rel="stylesheet" type="text/css" href="{{root}}/static/css/rickshaw.css">
+		<link rel="stylesheet" type="text/css" href="{{root}}/static/css/stats-simple.css">
 		
 		<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
-		<script src="/static/js/d3.v3.min.js"></script>
-		<script src="/static/js/rickshaw.js"></script>
-		<script src="/static/js/stats-simple.js"></script>
-		<script src="/static/js/ss-basic-functions.js"></script>
+		<script src="{{root}}/static/js/d3.v3.min.js"></script>
+		<script src="{{root}}/static/js/rickshaw.js"></script>
+		<script src="{{root}}/static/js/stats-simple.js"></script>
+		<script src="{{root}}/static/js/ss-basic-functions.js"></script>
 		<script>
 			var screenInfo = {{!data}};
 			var nodeSelect = {{user_select}};
