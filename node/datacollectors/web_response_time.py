@@ -5,8 +5,8 @@ import sys
 
 def web_response_time_collector(args):
 	try:
-		response = requests.get(args)
-		return float(str(response.elapsed).split(":")[2])
+		response = requests.get(args, verify=False)
+		return response.elapsed.total_seconds()
 	except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError, requests.exceptions.TooManyRedirects, requests.exceptions.Timeout) as e:
 		return 0;
 	except requests.exceptions.URLRequired:
