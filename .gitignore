@@ -37,3 +37,4 @@ nosetests.xml
 #stats-simple specific
 node/node.cfg
 server/server.cfg
+server/db.db
