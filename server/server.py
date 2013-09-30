@@ -12,9 +12,17 @@ j = f.read()
 f.close()
 cfg = json.loads( j )
 
+def fix_environ_middleware(app):
+	def fixed_app(environ, start_response):
+		environ['wsgi.url_scheme'] = cfg['host'].split("://")[0]
+		environ['HTTP_X_FORWARDED_HOST'] = cfg['host'].split("://")[1]
+		return app(environ, start_response)
+	return https_app
+
 app = bottle.Bottle()
 plugin = sqlite.Plugin(dbfile='db.db')
 app.install(plugin)
+app.wsgi = fix_environ_middleware(app.wsgi)
 
 @app.post('/register')
 def register(db):
@@ -109,8 +117,6 @@ def get_nodes(node, db):
 # :path is a bottle filter that matches strings with '/' in them
 @app.route('/static/<filename:path>')
 def server_static(filename):
-	while( filename.startswith( "/" ) ):
-		filename = filename[1:]
 	return static_file(filename, root='static/')
 
 @app.route('/screens/:screen')
@@ -125,5 +131,4 @@ def check_secret():
 def ssprint(text):
 	print "Stats-Simple Server: " + text
 
-host_arr = cfg['host'].split(":")
-app.run(host=host_arr[0], port=int(host_arr[1]))
+app.run(host=cfg['host'], port=cfg['port'])
