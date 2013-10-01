@@ -56,7 +56,9 @@ def server_reg():
 def do_post( url, values ):
 	global cfg
 	values['secret'] = cfg['secret']
-	url = "http://" + cfg['server'] + url
+	url = cfg['server'] + url
+	if( "://" not in url ):
+		url = "http://" + url
 	data = urllib.urlencode( values )
 	req = urllib2.Request( url, data )
 	response = urllib2.urlopen( req )
