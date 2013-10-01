@@ -26,7 +26,7 @@ $(function() {
 			for( var j = 0; j < row.length; j++ )
 			{
 				var column = row[j];
-				html += '<td><div class="chart-wrapper chart-' + column[0] + "-" + column[1] + '"></div></td>';
+				html += '<td><div class="chart-wrapper ' + chartSelector( column[0], column[1] ) + '"></div></td>';
 			}
 			html += '</tr>';
 		}
@@ -39,11 +39,16 @@ $(function() {
 			for( var j = 0; j < row.length; j++ )
 			{
 				var column = row[j];
-				graph( ".chart-" + column[0] + "-" + column[1], column[0], column[1] );
+				graph( chartSelector( column[0], column[1] ), column[0], column[1] );
 			}
 		}
 	}
 });
+
+function chartSelector( node, name )
+{
+	return 'chart-' + node.replace( /\./g, "-" ) + "-" + name;
+}
 
 function nodesData(data, textStatus, jqXHR) 
 {
