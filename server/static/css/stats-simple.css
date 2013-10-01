@@ -97,8 +97,14 @@ body {
 	width: 860px;
 }
 
-.select-wrapper {
+.chart-header {
 	margin-bottom: 10px;
+}
+
+.chart-title {
+	font-size: 15px;
+	float: left;
+	margin-right: 10px;
 }
 
 .y-axis {

@@ -118,7 +118,8 @@ function graph( selector, nodeName, name, time )
 						dataType: "json",
 						success: function(data, textStatus, jqXHR) {
 							var html = "";
-							html += ' <div class="select-wrapper">';
+							html += ' <div class="chart-header">';
+							html += ' 	<div class="chart-title">' + nodeName + ": " + name.replace( /_/g, " " ) + '</div>';
 							html += ' 	<select class="time-frame">';
 							html += ' 		<option value="hour:1">Last Hour</option>';
 							html += ' 		<option value="hour:2">Last 2 Hours</option>';
