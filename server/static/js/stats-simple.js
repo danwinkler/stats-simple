@@ -39,7 +39,7 @@ $(function() {
 			for( var j = 0; j < row.length; j++ )
 			{
 				var column = row[j];
-				graph( chartSelector( column[0], column[1] ), column[0], column[1] );
+				graph( "." + chartSelector( column[0], column[1] ), column[0], column[1] );
 			}
 		}
 	}
@@ -47,7 +47,7 @@ $(function() {
 
 function chartSelector( node, name )
 {
-	return '.chart-' + node.replace( /\./g, "-" ) + "-" + name;
+	return 'chart-' + node.replace( /\./g, "-" ) + "-" + name;
 }
 
 function nodesData(data, textStatus, jqXHR) 
