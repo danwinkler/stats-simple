@@ -47,7 +47,7 @@ $(function() {
 
 function chartSelector( node, name )
 {
-	return 'chart-' + node.replace( /\./g, "-" ) + "-" + name;
+	return '.chart-' + node.replace( /\./g, "-" ) + "-" + name;
 }
 
 function nodesData(data, textStatus, jqXHR) 
