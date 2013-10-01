@@ -95,6 +95,7 @@ body {
 	border: 1px solid grey;
 	border-radius: 6px;
 	width: 860px;
+	background-color: white;
 }
 
 .chart-header {
