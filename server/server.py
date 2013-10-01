@@ -111,7 +111,7 @@ def get_nodes(node, db):
 def server_static(filename):
 	return static_file(filename, root='static/')
 
-@app.route('/screens/:screen')
+@app.route('/screen/:screen')
 @app.route('/')
 def index(screen=None):
     return template("index", { "user_select": json.dumps( screen == None ), "data": json.dumps( cfg["screens"][screen] ) if screen!=None else "[]", "root": cfg['webpath'] } )
