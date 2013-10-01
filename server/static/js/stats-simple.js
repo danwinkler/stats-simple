@@ -18,6 +18,19 @@ $(function() {
 	else
 	{
 		html = "";
+		html += ' 	<select class="global-time-frame">';
+		html += ' 		<option value="hour:1">Last Hour</option>';
+		html += ' 		<option value="hour:2">Last 2 Hours</option>';
+		html += ' 		<option value="hour:3">Last 3 Hours</option>';
+		html += ' 		<option value="hour:6">Last 6 Hours</option>';
+		html += ' 		<option value="day:1">Last Day</option>';
+		html += ' 		<option value="day:3">Last 3 Days</option>';
+		html += ' 		<option value="day:7">Last Week</option>';
+		html += ' 		<option value="month:1">Last Month</option>';
+		html += ' 		<option value="month:6">Last 6 Months</option>';
+		html += ' 		<option value="month:12">Last Year</option>';
+		html += ' 		<option value="forever:0">Forever</option>';
+		html += ' 	</select>';
 		html += '<table>';
 		for( var i = 0; i < screenInfo.length; i++ )
 		{
@@ -32,6 +45,11 @@ $(function() {
 		}
 		html += '</table>';
 		$("#chart-display").html( html );
+
+		$(".global-time-frame").change(function() {
+			$(".time-frame").val( $(this).val() );
+			$(".time-frame").trigger( "change" );
+		});
 		
 		for( var i = 0; i < screenInfo.length; i++ )
 		{
