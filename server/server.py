@@ -3,6 +3,9 @@ from bottle.ext import sqlite
 import bottle
 import json
 import time
+import thread
+import sqlite3
+from triggers import *
 
 # Ugly but whatever
 time_dict = { "hour": 60*60, "day": 60*60*24, "month": 60*60*24*30, "year": 60*60*24*365 }
@@ -11,6 +14,16 @@ f = open( "server.cfg" )
 j = f.read()
 f.close()
 cfg = json.loads( j )
+
+
+# Trigger Thread
+def trigger_thread( args ):
+	while True:
+		for t in ss_triggers.triggers:
+			t()
+		time.sleep( 300 )
+
+thread.start_new_thread( trigger_thread, ("",) )
 
 app = bottle.Bottle()
 plugin = sqlite.Plugin(dbfile='db.db')
