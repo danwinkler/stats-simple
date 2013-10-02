@@ -5,6 +5,7 @@ import json
 import time
 import thread
 import sqlite3
+import os
 from triggers import *
 
 # Ugly but whatever
@@ -67,6 +68,15 @@ def post_data(db):
 	for d in data:
 		db.execute( 'INSERT into data (node,time,name,type,value) VALUES (?,?,?,?,?)', (row['id'],int(time),d['name'], d['type'],json.dumps( d['data'] )) )
 	return json.dumps( { "success": "VALUES_ENTERED" } )
+
+@app.post('/datacollectors')
+def post_datacollectors():
+	if not check_secret():
+		return "WRONG_SECRET"
+	fh = open( "datacollectors" + os.sep + request.forms.file )
+	t = fh.read()
+	fh.close()
+	return t
 
 @app.get("/data/:node/:name/:time/:end")
 def get_data(node,name,time,end,db):

@@ -3,11 +3,11 @@ import time
 import json
 import sys
 import psutil
-from datacollectors import *
-collectors = ss_collect.collectors
+import os
 
 def run():
 	global cfg
+	global collectors
 	
 	#OPEN CONFIGURATION FILE
 	f = open( "node.cfg" )
@@ -16,6 +16,11 @@ def run():
 	cfg = json.loads( j )
 	
 	server_reg()
+
+	get_collectors()
+
+	import datacollectors
+	collectors = datacollectors.ss_collect.collectors
 
 	#Every interval send data
 	while True:
@@ -53,6 +58,22 @@ def server_reg():
 			print "Failed to Connect, Will try again in 10 seconds: " + str(e)
 			time.sleep( 10 )
 
+def get_collectors():
+	if not os.path.isdir( "datacollectors" ):
+		os.mkdir( "datacollectors" )
+
+	to_dl = ["__init__.py", "ss_collect.py"]
+	for val in cfg['data']:
+		to_dl.append( val[1] + ".py" )
+
+	for f in to_dl:
+		t = do_post( "/datacollectors", { "file": f } )
+		if "WRONG_SECRET" in t:
+			continue
+		fh = open( "datacollectors" + os.sep + f, "w" )
+		fh.write( t )
+		fh.close()
+
 def do_post( url, values ):
 	global cfg
 	values['secret'] = cfg['secret']
@@ -69,7 +90,12 @@ def get_data():
 		global cfg
 		data = []
 		for val in cfg['data']:
-			data.append( {"name": val[0], "type": val[1], "data": (collectors[val[1]]() if len(val)==2 else collectors[val[1]](val[2])) } )
+			d = None
+			if( len(val) == 2 ):
+				d = collectors[val[1]]()
+			else:
+				d = collectors[val[1]](val[2])
+			data.append( { "name": val[0], "type": val[1], "data": d } )
 		return data
 	except KeyError as e:
 		sys.exit( "Incorrect data collector type in node.cfg: " + str(e) )

@@ -36,5 +36,7 @@ nosetests.xml
 
 #stats-simple specific
 node/node.cfg
+node/datacollectors
+node/datacollectors/*
 server/server.cfg
 server/db.db

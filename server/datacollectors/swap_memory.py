@@ -12,5 +12,4 @@ def swap_memory_collector():
 	dict["sout"] = m.sout
 	return dict
 	
-
 collectors['swap_memory'] = swap_memory_collector

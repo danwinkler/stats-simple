@@ -1,4 +1,8 @@
 import os
-import glob
+import ss_collect
 
-__all__ = [ os.path.basename(f)[:-3] for f in glob.glob(os.path.dirname(__file__)+"/*.py")]
+for module in os.listdir(os.path.dirname(__file__)):
+    if module == '__init__.py' or module == 'ss_collect.py' or module[-3:] != '.py':
+        continue
+    __import__(module[:-3], locals(), globals())
+del module
