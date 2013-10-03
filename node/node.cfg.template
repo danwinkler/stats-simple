@@ -1,8 +1,8 @@
 {
 	"name": "node-0",
 	"server": "localhost:8080",
-	"secret": "secret",
 	"interval": 60,
+	"auth": ["single_secret", "secret"],
 	"data": [
 		["CPU_Load", "cpu_percent"], 
 		["Virtual_Memory", "virtual_memory"], 

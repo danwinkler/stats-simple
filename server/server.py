@@ -34,7 +34,7 @@ app.install(plugin)
 def register(db):
 	if not check_secret():
 		ssprint( "Client sent incorrect secret" )
-		return json.dumps( { "error": "WRONG_SECRET" } )
+		return json.dumps( { "error": "WRONG_AUTH" } )
 	name = request.forms.name
 	if not name:
 		ssprint( "Client tried to register with no name set" )
@@ -51,7 +51,7 @@ def register(db):
 @app.post('/data')
 def post_data(db):
 	if not check_secret():
-		return json.dumps( { "error": "WRONG_SECRET" } )
+		return json.dumps( { "error": "WRONG_AUTH" } )
 	name = request.forms.name
 	if not name:
 		return json.dumps( { "error": "NO_ID" } )
@@ -69,11 +69,11 @@ def post_data(db):
 		db.execute( 'INSERT into data (node,time,name,type,value) VALUES (?,?,?,?,?)', (row['id'],int(time),d['name'], d['type'],json.dumps( d['data'] )) )
 	return json.dumps( { "success": "VALUES_ENTERED" } )
 
-@app.post('/datacollectors')
-def post_datacollectors():
+@app.post('/plugins')
+def post_plugins():
 	if not check_secret():
-		return "WRONG_SECRET"
-	fh = open( "datacollectors" + os.sep + request.forms.file )
+		return json.dumps( { "error": "WRONG_AUTH" } )
+	fh = open( "plugins" + os.sep + request.forms.file )
 	t = fh.read()
 	fh.close()
 	return t

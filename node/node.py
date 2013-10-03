@@ -8,6 +8,7 @@ import os
 def run():
 	global cfg
 	global collectors
+	global send_auth
 	
 	#OPEN CONFIGURATION FILE
 	f = open( "node.cfg" )
@@ -17,10 +18,11 @@ def run():
 	
 	server_reg()
 
-	get_collectors()
+	get_plugins()
 
-	import datacollectors
-	collectors = datacollectors.ss_collect.collectors
+	import plugins
+	collectors = plugins.ss_plugin.collectors
+	send_auth = plugins.ss_plugin.send_auth
 
 	#Every interval send data
 	while True:
@@ -45,7 +47,7 @@ def server_reg():
 			jre = do_post( "/register", { "name": cfg['name'] } )
 			re = json.loads( jre )
 			if "error" in re:
-				if( re["error"] == "WRONG_SECRET" ):
+				if( re["error"] == "WRONG_AUTH" ):
 					sys.exit( "Secret in node.cfg does not match server's secret" )
 				print re['error']
 				continue
@@ -58,25 +60,25 @@ def server_reg():
 			print "Failed to Connect, Will try again in 10 seconds: " + str(e)
 			time.sleep( 10 )
 
-def get_collectors():
-	if not os.path.isdir( "datacollectors" ):
-		os.mkdir( "datacollectors" )
+def get_plugins():
+	if not os.path.isdir( "plugins" ):
+		os.mkdir( "plugins" )
 
-	to_dl = ["__init__.py", "ss_collect.py"]
+	to_dl = ["__init__.py", "ss_plugin.py"]
 	for val in cfg['data']:
 		to_dl.append( val[1] + ".py" )
 
 	for f in to_dl:
-		t = do_post( "/datacollectors", { "file": f } )
-		if "WRONG_SECRET" in t:
+		t = do_post( "/plugins", { "file": f } )
+		if "WRONG_AUTH" in t:
 			continue
-		fh = open( "datacollectors" + os.sep + f, "w" )
+		fh = open( "plugins" + os.sep + f, "w" )
 		fh.write( t )
 		fh.close()
 
 def do_post( url, values ):
 	global cfg
-	values['secret'] = cfg['secret']
+	values['auth'] = get_auth()
 	url = cfg['server'] + url
 	if( "://" not in url ):
 		url = "http://" + url
@@ -84,6 +86,19 @@ def do_post( url, values ):
 	req = urllib2.Request( url, data )
 	response = urllib2.urlopen( req )
 	return response.read()
+
+def get_auth():
+	global cfg
+	global send_auth
+	auths = {}
+	for val in cfg["auth"]:
+		a = None
+		if( len(val) == 1 ):
+			a = send_auth[val[0]]()
+		else:
+			a = send_auth[val[0]](val[1])
+		auths[val[0]] = a
+	return auths
 	
 def get_data():
 	try:
