@@ -16,13 +16,13 @@ def run():
 	f.close()
 	cfg = json.loads( j )
 	
-	server_reg()
-
 	get_plugins()
 
 	import plugins
 	collectors = plugins.ss_plugin.collectors
 	send_auth = plugins.ss_plugin.send_auth
+
+	server_reg()
 
 	#Every interval send data
 	while True:
@@ -48,7 +48,7 @@ def server_reg():
 			re = json.loads( jre )
 			if "error" in re:
 				if( re["error"] == "WRONG_AUTH" ):
-					sys.exit( "Secret in node.cfg does not match server's secret" )
+					sys.exit( "Authentication failed" )
 				print re['error']
 				continue
 			elif 'success' in re:
@@ -68,17 +68,19 @@ def get_plugins():
 	for val in cfg['data']:
 		to_dl.append( val[1] + ".py" )
 
+	for val in cfg['auth']:
+		to_dl.append( val[0] + ".py" )
+
 	for f in to_dl:
-		t = do_post( "/plugins", { "file": f } )
-		if "WRONG_AUTH" in t:
-			continue
+		t = do_post( "/plugins", { "file": f }, False )
 		fh = open( "plugins" + os.sep + f, "w" )
 		fh.write( t )
 		fh.close()
 
-def do_post( url, values ):
-	global cfg
-	values['auth'] = get_auth()
+def do_post( url, values, auth=True ):
+	if auth:
+		global cfg
+		values['auth'] = get_auth()
 	url = cfg['server'] + url
 	if( "://" not in url ):
 		url = "http://" + url
@@ -89,7 +91,6 @@ def do_post( url, values ):
 
 def get_auth():
 	global cfg
-	global send_auth
 	auths = {}
 	for val in cfg["auth"]:
 		a = None
@@ -98,7 +99,7 @@ def get_auth():
 		else:
 			a = send_auth[val[0]](val[1])
 		auths[val[0]] = a
-	return auths
+	return json.dumps( auths )
 	
 def get_data():
 	try:

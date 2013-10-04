@@ -1,4 +1,4 @@
-from ss_collect import *
+from ss_plugin import *
 import psutil
 
 def virtual_memory_collector():

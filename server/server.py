@@ -7,6 +7,9 @@ import thread
 import sqlite3
 import os
 from triggers import *
+import plugins
+import smtplib
+from email.mime.text import MIMEText
 
 # Ugly but whatever
 time_dict = { "hour": 60*60, "day": 60*60*24, "month": 60*60*24*30, "year": 60*60*24*365 }
@@ -33,7 +36,7 @@ app.install(plugin)
 @app.post('/register')
 def register(db):
 	if not check_secret():
-		ssprint( "Client sent incorrect secret" )
+		ssprint( "Authentication Failed" )
 		return json.dumps( { "error": "WRONG_AUTH" } )
 	name = request.forms.name
 	if not name:
@@ -71,8 +74,6 @@ def post_data(db):
 
 @app.post('/plugins')
 def post_plugins():
-	if not check_secret():
-		return json.dumps( { "error": "WRONG_AUTH" } )
 	fh = open( "plugins" + os.sep + request.forms.file )
 	t = fh.read()
 	fh.close()
@@ -148,7 +149,29 @@ def index(screen):
 
 def check_secret():
 	global cfg
-	return request.forms.secret and request.forms.secret == cfg['secret']
+	auth = json.loads( request.forms.auth )
+	for val in cfg['auth']:
+		ret = None
+		if len( val ) == 1:
+			ret = plugins.ss_plugin.receive_auth[val[0]]()
+		else:
+			ret = plugins.ss_plugin.receive_auth[val[0]]( options=val[1], content=auth[val[0]] )
+		if ret == False:
+			return False;
+	return True
+
+def send_email(subject, content):
+	global cfg
+	msg = MIMEText( content )
+	msg["Subject"] = "Stats-Simple Email Alert: " + subject
+	msg["From"] = cfg['email']['sender']
+	msg["To"] = ", ".join( cfg['email']['receivers'] )
+
+	s = smtplib.SMTP( cfg['email']['host'], cfg['email']['port'] )
+	if( "username" in cfg['email'] ):
+		s.login( cfg['email']['username'], cfg['email']['password'] )
+	s.sendmail( cfg['email']['sender'], cfg['email']['receivers'], msg.as_string() )
+	s.quit()
 
 def ssprint(text):
 	print "Stats-Simple Server: " + text
