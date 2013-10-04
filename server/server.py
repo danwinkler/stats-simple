@@ -3,6 +3,7 @@ from bottle.ext import sqlite
 import bottle
 import json
 import time
+import datetime
 import thread
 import sqlite3
 import os
@@ -23,11 +24,13 @@ cfg = json.loads( j )
 # Trigger Thread
 def trigger_thread( args ):
 	while True:
-		for t in ss_triggers.triggers:
-			t()
+		for t in cfg['triggers']:
+			ss_triggers.triggers[t]()
+		email_on_alerts()
 		time.sleep( 300 )
 
-thread.start_new_thread( trigger_thread, ("",) )
+if "triggers" in cfg:
+	thread.start_new_thread( trigger_thread, ("",) )
 
 app = bottle.Bottle()
 plugin = sqlite.Plugin(dbfile='db.db')
@@ -147,6 +150,29 @@ def index(screen):
 	screen = json.dumps( arr )
 	return template("index", { "user_select": json.dumps( False ), "data": screen, "root": cfg['webpath'] } )
 
+def email_on_alerts():
+	conn = sqlite3.connect( "db.db" )
+	conn.row_factory = sqlite3.Row
+	db = conn.cursor()
+	time_ago = time.time() - (60*60*24)
+	unique_alerts_last_day = db.execute('SELECT DISTINCT name from alerts where time >= ?', (time_ago,) ).fetchall()
+	for name_row in unique_alerts_last_day:
+		#Find out if we've sent an email for this alert in the last day
+		rows = db.execute('SELECT time FROM alerts where name = ? AND time >= ? AND sentmail=1', (name_row['name'], time_ago)).fetchall()
+		if len( rows ) > 0:
+			continue
+		else:
+			#If we havent sent an email for this type of alert, send an email with all the alerts from the last day
+			email_str = ""
+			rows = db.execute('SELECT id, value, sentmail, time FROM alerts where name = ? AND time >= ?', (name_row['name'], time_ago)).fetchall()
+			for row in rows:
+				email_str += datetime.datetime.fromtimestamp(int(row['time'])).strftime('%Y-%m-%d %H:%M:%S')
+				email_str += " " + row['value'] + "\n"
+			send_email( name_row['name'], email_str )
+			db.execute( "UPDATE alerts SET sentmail=1 where id=?", (rows[-1]['id'],))
+	conn.commit()
+	conn.close()
+
 def check_secret():
 	global cfg
 	auth = json.loads( request.forms.auth )
@@ -171,6 +197,7 @@ def send_email(subject, content):
 	if( "username" in cfg['email'] ):
 		s.login( cfg['email']['username'], cfg['email']['password'] )
 	s.sendmail( cfg['email']['sender'], cfg['email']['receivers'], msg.as_string() )
+	ssprint( "Sent mail: " + subject )
 	s.quit()
 
 def ssprint(text):

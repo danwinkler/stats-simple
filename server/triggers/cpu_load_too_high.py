@@ -13,4 +13,4 @@ def cpu_load_too_high():
 		if avg > 70:
 			make_alert( node["name"] + "-CPU_Load", node["name"] + " average CPU Load over last 5 minutes was " + str(avg), 2 )
 
-triggers.append( cpu_load_too_high )
+triggers['cpu_load_too_high'] = cpu_load_too_high

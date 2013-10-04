@@ -7,7 +7,7 @@ def get_nodes():
 	conn.row_factory = sqlite3.Row
 	db = conn.cursor()
 	rows = db.execute('SELECT id,name from nodes').fetchall()
-	db.close()
+	conn.close()
 	nodes = []
 	for row in rows:
 		nodes.append( { "id": row['id'], "name": row['name'] } )
@@ -19,7 +19,7 @@ def latest_node_data( node, name, time_span ):
 	db = conn.cursor()
 	time_ago = time.time() - time_span
 	rows = db.execute('SELECT value, time from data where node=? AND name=? AND time >= ?', (node,name,time_ago) ).fetchall()
-	db.close()
+	conn.close()
 	data = []
 	for row in rows:
 		data.append( { "time": row['time'], "value": json.loads( row['value'] ) } )

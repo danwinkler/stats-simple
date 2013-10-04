@@ -1,1 +1,1 @@
-triggers = []
+triggers = {}
