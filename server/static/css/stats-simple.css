@@ -83,6 +83,10 @@ body {
 	text-decoration: none;
 }
 
+.ajax-loader {
+	
+}
+
 #chart-display {
 	padding: 10px;
 	border: 1px solid grey;

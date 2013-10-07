@@ -26,7 +26,8 @@ def trigger_thread( args ):
 	while True:
 		for t in cfg['triggers']:
 			ss_triggers.triggers[t]()
-		email_on_alerts()
+		if "email" in cfg:
+			email_on_alerts()
 		time.sleep( 300 )
 
 if "triggers" in cfg:
@@ -194,7 +195,7 @@ def send_email(subject, content):
 	msg["To"] = ", ".join( cfg['email']['receivers'] )
 
 	s = smtplib.SMTP( cfg['email']['host'], cfg['email']['port'] )
-	if( "username" in cfg['email'] ):
+	if( "username" in cfg['email'] and "password" in cfg["email"]):
 		s.login( cfg['email']['username'], cfg['email']['password'] )
 	s.sendmail( cfg['email']['sender'], cfg['email']['receivers'], msg.as_string() )
 	ssprint( "Sent mail: " + subject )

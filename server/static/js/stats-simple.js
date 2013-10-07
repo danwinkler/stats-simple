@@ -160,6 +160,7 @@ function graph( selector, nodeName, name, time )
 							renderFunctions[dataType]( data, selector );
 							
 							$(".time-frame", selector).change(function() {
+								$(".chart-header", selector).append( '<img class="ajax-loader" src="/static/img/ajax-loader.gif"></img>' );
 								graph( selector, nodeName, name, $(this).val() );
 							});
 						}
