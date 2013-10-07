@@ -1,3 +1,20 @@
+function add_zero_data_in_gaps( data, blank )
+{
+	for( var i = 0; i < data.length-1; i++ )
+	{
+		var d1 = data[i];
+		var d2 = data[i+1];
+		var timeDiff = d2['time'] - d1['time'];
+		if( timeDiff > 5*60 )
+		{
+			data.splice( 0, i+1, { 'time': d2['time']-60, 'value': blank } );
+			data.splice( 0, i+1, { 'time': d1['time']+60, 'value': blank } );
+			i += 2;
+		}
+	}
+	return data
+}
+
 function render_cpu_percent( data, element ) 
 {
 	if( data.length < 1 ) return;
@@ -25,6 +42,10 @@ function render_cpu_percent( data, element )
 		}
 		data = new_data;
 	}
+
+	blank = [];
+	for( var i = 0; i < procCount; i++ ) { blank.push( 0 ); }
+	data = add_zero_data_in_gaps( data, blank );
 	
 	var palette = new Rickshaw.Color.Palette();
 	var series = [];
@@ -70,6 +91,11 @@ function render_virtual_memory( data, element )
 	if( data.length < 1 ) return;
 	
 	var types = ['total','available','percent','used','free'];
+	
+	blank = {};
+	for( var t in types ) { blank[t] = 0; }
+	data = add_zero_data_in_gaps( data, blank );
+
 	var palette = new Rickshaw.Color.Palette();
 	var series = [];
 	
@@ -115,6 +141,11 @@ function render_swap_memory( data, element )
 	if( data.length < 1 ) return;
 	
 	var types = ['total','used','free','percent','sin','sout'];
+	
+	blank = {};
+	for( var t in types ) { blank[t] = 0; }
+	data = add_zero_data_in_gaps( data );
+
 	var palette = new Rickshaw.Color.Palette();
 	var series = [];
 
@@ -158,6 +189,8 @@ function render_web_response_time( data, element )
 {
 	if( data.length < 1 ) return;
 	
+	data = add_zero_data_in_gaps( data, 0 );
+
 	var palette = new Rickshaw.Color.Palette();
 	var series = [];
 	var rickData = [];
@@ -227,6 +260,10 @@ function render_all_disks( data, element )
 		}
 		data = new_data;
 	}
+
+	blank = {};
+	for( var t in types ) { blank[t] = 0; }
+	data = add_zero_data_in_gaps( data, blank );
 
 	var palette = new Rickshaw.Color.Palette();
 	var series = [];
