@@ -117,6 +117,8 @@ function render_swap_memory( data, element )
 	var types = ['total','used','free','percent','sin','sout'];
 	var palette = new Rickshaw.Color.Palette();
 	var series = [];
+
+	//TODO: let user choose what kind of memory to view
 	
 	var rickData = [];
 	for( var i = 0; i < data.length; i++ )
@@ -197,9 +199,37 @@ function render_all_disks( data, element )
 	if( data.length < 1 ) return;
 	
 	var types = ['total','used','free','percent'];
+	
+	if( data.length > 1000 )
+	{
+		var new_data = [];
+		for( var i = 0; i < data.length-10; i += 10 )
+		{
+			var d = data[i]['value'];
+			for( var j = 1; j < 10; j++ )
+			{
+				for( var disk in d )
+				{
+					for( var t in types )
+					{
+						d[disk][t] += data[i+j]['value'][disk][t];
+					}
+				}
+			}
+			for( var disk in d )
+			{
+				for( var t in types )
+				{
+					d[disk][t] = d[disk][t] / 10.0;
+				}
+			}
+			new_data.push( { 'time': data[i+5]['time'], 'value': d } );
+		}
+		data = new_data;
+	}
+
 	var palette = new Rickshaw.Color.Palette();
 	var series = [];
-	
 	for( var i = 0; i < data.length; i++ )
 	{
 		for( var disk in data[i]['value'] )

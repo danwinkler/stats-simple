@@ -223,4 +223,6 @@ def ssprint(text):
 # ---------------RUN----------------
 # ----------------------------------
 
+if not 'auth' in cfg:
+	ssprint( "WARNING: No authentication is setup." )
 app.run(host=cfg['host'], port=cfg['port'])
