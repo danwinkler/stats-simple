@@ -187,10 +187,10 @@ def email_on_alerts():
 	conn.close()
 
 def check_secret():
+	global cfg
 	if not "auth" in cfg:
 		return True
 
-	global cfg
 	auth = json.loads( request.forms.auth )
 	for val in cfg['auth']:
 		ret = None
