@@ -1,10 +1,33 @@
 function render_cpu_percent( data, element ) 
 {
 	if( data.length < 1 ) return;
+
+	var procCount = data[0]['value'].length;
+
+	if( data.length > 1000 )
+	{
+		var new_data = [];
+		for( var i = 0; i < data.length-10; i += 10 )
+		{
+			var d = data[i]['value'];
+			for( var j = 1; j < 10; j++ )
+			{
+				for( var k = 0; k < procCount; k++ )
+				{
+					d[k] += data[i+j]['value'][k];
+				}
+			}
+			for( var k = 0; k < procCount; k++ )
+			{
+				d[k] = d[k] / 10.0;
+			}
+			new_data.push( { 'time': data[i+5]['time'], 'value': d } );
+		}
+		data = new_data;
+	}
 	
 	var palette = new Rickshaw.Color.Palette();
 	var series = [];
-	var procCount = data[0]['value'].length;
 	for( var j = 0; j < procCount; j++ )
 	{
 		var rickData = [];

@@ -12,6 +12,10 @@ import plugins
 import smtplib
 from email.mime.text import MIMEText
 
+# ----------------------------------
+# --------------SETUP---------------
+# ----------------------------------
+
 # Ugly but whatever
 time_dict = { "hour": 60*60, "day": 60*60*24, "month": 60*60*24*30, "year": 60*60*24*365 }
 
@@ -36,6 +40,10 @@ if "triggers" in cfg:
 app = bottle.Bottle()
 plugin = sqlite.Plugin(dbfile='db.db')
 app.install(plugin)
+
+# ---------------------------------
+# -------------ROUTES--------------
+# ---------------------------------
 
 @app.post('/register')
 def register(db):
@@ -151,6 +159,10 @@ def index(screen):
 	screen = json.dumps( arr )
 	return template("index", { "user_select": json.dumps( False ), "data": screen, "root": cfg['webpath'] } )
 
+# ---------------------------------
+# --------HELPER FUNCTIONS---------
+# ---------------------------------
+
 def email_on_alerts():
 	conn = sqlite3.connect( "db.db" )
 	conn.row_factory = sqlite3.Row
@@ -175,6 +187,9 @@ def email_on_alerts():
 	conn.close()
 
 def check_secret():
+	if not "auth" in cfg:
+		return True
+
 	global cfg
 	auth = json.loads( request.forms.auth )
 	for val in cfg['auth']:
@@ -203,5 +218,9 @@ def send_email(subject, content):
 
 def ssprint(text):
 	print "Stats-Simple Server: " + text
+
+# ----------------------------------
+# ---------------RUN----------------
+# ----------------------------------
 
 app.run(host=cfg['host'], port=cfg['port'])
