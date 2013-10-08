@@ -85,7 +85,7 @@ function render_cpu_percent( data, element, time )
 		height: graphHeight,
 		renderer: 'stack',
 		series: series,
-		interpolation: "linear"
+		interpolation: "step"
 	} );
 	
 	var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );
@@ -137,7 +137,7 @@ function render_virtual_memory( data, element, time )
 		height: graphHeight,
 		renderer: 'stack',
 		series: series,
-		interpolation: "linear"
+		interpolation: "step"
 	} );
 	
 	var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );
@@ -187,7 +187,7 @@ function render_swap_memory( data, element, time )
 		height: graphHeight,
 		renderer: 'stack',
 		series: series,
-		interpolation: "linear"
+		interpolation: "step"
 	} );
 	
 	var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );
@@ -230,7 +230,7 @@ function render_web_response_time( data, element, time )
 		height: graphHeight,
 		renderer: 'stack',
 		series: series,
-		interpolation: "linear"
+		interpolation: "step"
 	} );
 	
 	var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );
@@ -330,7 +330,7 @@ function render_all_disks( data, element, time )
 		height: graphHeight,
 		renderer: 'line',
 		series: series,
-		interpolation: "linear"
+		interpolation: "step"
 	} );
 	
 	var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );
