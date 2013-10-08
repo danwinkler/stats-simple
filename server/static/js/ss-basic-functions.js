@@ -264,18 +264,22 @@ function render_all_disks( data, element, time )
 			var d = data[i]['value'];
 			for( var j = 1; j < 10; j++ )
 			{
-				for( var disk in d )
+				for( var k = 0; k < d.length; k++ )
 				{
-					for( var t in types )
+					var disk = d[k];
+					for( var l = 0; l < types.length; l++ )
 					{
+						var t = types[l];
 						d[disk][t] += data[i+j]['value'][disk][t];
 					}
 				}
 			}
-			for( var disk in d )
+			for( var k = 0; k < d.length; k++ )
 			{
-				for( var t in types )
+				var disk = d[k];
+				for( var l = 0; l < types.length; l++ )
 				{
+					var t = types[l];
 					d[disk][t] = d[disk][t] / 10.0;
 				}
 			}
@@ -285,7 +289,14 @@ function render_all_disks( data, element, time )
 	}
 
 	blank = {};
-	for( var i = 0; i < types.length; i++ ) { blank[types[i]] = 0; }
+	for( var i = 0; i < data[0].length; i++ ) 
+	{ 
+		var disk = data[0][i];
+		for( var j = 0; j < types.length; j++ ) 
+		{ 
+			blank[disk][types[j]] = 0; 
+		} 
+	}
 	data = add_zero_data_in_gaps( data, blank, time );
 
 	var palette = new Rickshaw.Color.Palette();
