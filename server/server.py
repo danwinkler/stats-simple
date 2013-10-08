@@ -24,6 +24,13 @@ j = f.read()
 f.close()
 cfg = json.loads( j )
 
+#Defaults
+if "graph_width" not in cfg:
+	cfg["graph_width"] = 420
+
+if "graph_height" not in cfg:
+	cfg["graph_height"] = 100
+
 
 # Trigger Thread
 def trigger_thread( args ):
@@ -150,14 +157,14 @@ def server_static(filename):
 @app.route('/screen/:screen')
 @app.route('/')
 def index(screen=None):
-    return template("index", { "user_select": json.dumps( screen == None ), "data": json.dumps( cfg["screens"][screen] ) if (screen!=None and screen in cfg["screens"]) else "[]", "root": cfg['webpath'] } )
+    return template("index", { "user_select": json.dumps( screen == None ), "data": json.dumps( cfg["screens"][screen] ) if (screen!=None and screen in cfg["screens"]) else "[]", "cfg": cfg } )
 
 @app.route('/custom/:screen')
 def index(screen):
 	arr = json.loads( screen )
 	print arr
 	screen = json.dumps( arr )
-	return template("index", { "user_select": json.dumps( False ), "data": screen, "root": cfg['webpath'] } )
+	return template("index", { "user_select": json.dumps( False ), "data": screen, "cfg": cfg } )
 
 # ---------------------------------
 # --------HELPER FUNCTIONS---------

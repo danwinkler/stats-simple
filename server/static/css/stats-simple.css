@@ -5,7 +5,6 @@ body {
 #node-list {
 	padding: 10px;
 	border: 1px solid grey;
-	width: 860px;
 	border-radius: 6px;
 	margin-bottom: 10px;
 	display: none;
@@ -48,7 +47,6 @@ body {
 #info-list {
 	padding: 10px;
 	border: 1px solid grey;
-	width: 860px;
 	border-radius: 6px;
 	display: none;
 	margin-bottom: 10px;
@@ -98,7 +96,6 @@ body {
 	padding: 10px;
 	border: 1px solid grey;
 	border-radius: 6px;
-	width: 860px;
 	background-color: white;
 }
 
@@ -114,8 +111,7 @@ body {
 
 .y-axis {
 	float: left;
-	width: 40px;
-	height: 200px
+	width: 30px;
 }
 
 .chart {

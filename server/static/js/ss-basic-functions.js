@@ -81,8 +81,8 @@ function render_cpu_percent( data, element, time )
 	
 	var graph = new Rickshaw.Graph( {
 		element: $(".chart", element).get(0),
-		width: width,
-		height: height,
+		width: graphWidth,
+		height: graphHeight,
 		renderer: 'stack',
 		series: series,
 		interpolation: "linear"
@@ -133,8 +133,8 @@ function render_virtual_memory( data, element, time )
 	
 	var graph = new Rickshaw.Graph( {
 		element: $(".chart", element).get(0),
-		width: width,
-		height: height,
+		width: graphWidth,
+		height: graphHeight,
 		renderer: 'stack',
 		series: series,
 		interpolation: "linear"
@@ -183,8 +183,8 @@ function render_swap_memory( data, element, time )
 	
 	var graph = new Rickshaw.Graph( {
 		element: $(".chart", element).get(0),
-		width: width,
-		height: height,
+		width: graphWidth,
+		height: graphHeight,
 		renderer: 'stack',
 		series: series,
 		interpolation: "linear"
@@ -226,8 +226,8 @@ function render_web_response_time( data, element, time )
 	
 	var graph = new Rickshaw.Graph( {
 		element: $(".chart", element).get(0),
-		width: width,
-		height: height,
+		width: graphWidth,
+		height: graphHeight,
 		renderer: 'stack',
 		series: series,
 		interpolation: "linear"
@@ -326,8 +326,8 @@ function render_all_disks( data, element, time )
 	
 	var graph = new Rickshaw.Graph( {
 		element: $(".chart", element).get(0),
-		width: width,
-		height: height,
+		width: graphWidth,
+		height: graphHeight,
 		renderer: 'line',
 		series: series,
 		interpolation: "linear"
