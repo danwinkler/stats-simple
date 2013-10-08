@@ -170,19 +170,32 @@ def email_on_alerts():
 	time_ago = time.time() - (60*60*24)
 	unique_alerts_last_day = db.execute('SELECT DISTINCT name from alerts where time >= ?', (time_ago,) ).fetchall()
 	for name_row in unique_alerts_last_day:
-		#Find out if we've sent an email for this alert in the last day
-		rows = db.execute('SELECT time FROM alerts where name = ? AND time >= ? AND sentmail=1', (name_row['name'], time_ago)).fetchall()
-		if len( rows ) > 0:
-			continue
-		else:
-			#If we havent sent an email for this type of alert, send an email with all the alerts from the last day
-			email_str = ""
-			rows = db.execute('SELECT id, value, sentmail, time FROM alerts where name = ? AND time >= ?', (name_row['name'], time_ago)).fetchall()
-			for row in rows:
-				email_str += datetime.datetime.fromtimestamp(int(row['time'])).strftime('%Y-%m-%d %H:%M:%S')
-				email_str += " " + row['value'] + "\n"
-			send_email( name_row['name'], email_str )
+		#Select all alerts from last day
+		rows = db.execute('SELECT id, time, value, sentmail FROM alerts where name = ? AND time >= ?', (name_row['name'], time_ago)).fetchall()
+		#If only one alert in the last day and we havent sent email for it
+		if len( rows ) == 1 and rows[-1]['sentmail'] != 1:
+			send_email( name_row['name'], datetime.datetime.fromtimestamp(int(rows[-1]['time'])).strftime('%Y-%m-%d %H:%M:%S') + " " + rows[-1]['value'] )
 			db.execute( "UPDATE alerts SET sentmail=1 where id=?", (rows[-1]['id'],))
+		elif len( rows ) > 1:
+			send_mail = True
+			#look for continous block recently that we didnt send mail for
+			for i in xrange( len( rows )-1, 0, -1 ):
+				a = rows[i]
+				b = rows[i-1]
+				if a['sentmail']:
+					send_mail = False
+					break
+				if a['time'] - b['time'] > 20*60:
+					break
+			if send_mail:
+				#If we havent sent an email for this type of alert, send an email with all the alerts from the last day
+				email_str = ""
+				rows = db.execute('SELECT id, value, sentmail, time FROM alerts where name = ? AND time >= ?', (name_row['name'], time_ago)).fetchall()
+				for row in rows:
+					email_str += datetime.datetime.fromtimestamp(int(row['time'])).strftime('%Y-%m-%d %H:%M:%S')
+					email_str += " " + row['value'] + "\n"
+				send_email( name_row['name'], email_str )
+				db.execute( "UPDATE alerts SET sentmail=1 where id=?", (rows[-1]['id'],))
 	conn.commit()
 	conn.close()
 
