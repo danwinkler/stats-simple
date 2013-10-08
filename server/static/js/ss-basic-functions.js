@@ -1,21 +1,39 @@
-function add_zero_data_in_gaps( data, blank )
+function add_zero_data_in_gaps( data, blank, time )
 {
+	var timeDict = { "hour": 60*60, "day": 60*60*24, "month": 60*60*24*30, "year": 60*60*24*365 };
+	
+	var now = Math.round(new Date().getTime() / 1000);
+	var timeSpan = time.split( ":" );
+	timeSpan = timeDict[timeSpan[0]] * parseInt(timeSpan[1]);
+	var begin = now-timeSpan;
+	
+	if( data[0]['time'] - begin > 20*60 )
+	{
+		data.splice( 0, 0, {'time':begin, 'value': blank} );
+	}
+	
+	if( now - data[data.length-1]['time'] > 20*60 )
+	{
+		data.push( {'time':now, 'value': blank} );
+	}
+	
 	for( var i = 0; i < data.length-1; i++ )
 	{
 		var d1 = data[i];
 		var d2 = data[i+1];
 		var timeDiff = d2['time'] - d1['time'];
-		if( timeDiff > 5*60 )
+		if( timeDiff > 20*60 )
 		{
-			data.splice( 0, i+1, { 'time': d2['time']-60, 'value': blank } );
-			data.splice( 0, i+1, { 'time': d1['time']+60, 'value': blank } );
+			data.splice( i+1, 0, { 'time': d2['time']-60, 'value': blank } );
+			data.splice( i+1, 0, { 'time': d1['time']+60, 'value': blank } );
 			i += 2;
 		}
 	}
-	return data
+	
+	return data;
 }
 
-function render_cpu_percent( data, element ) 
+function render_cpu_percent( data, element, time ) 
 {
 	if( data.length < 1 ) return;
 
@@ -45,7 +63,7 @@ function render_cpu_percent( data, element )
 
 	blank = [];
 	for( var i = 0; i < procCount; i++ ) { blank.push( 0 ); }
-	data = add_zero_data_in_gaps( data, blank );
+	data = add_zero_data_in_gaps( data, blank, time );
 	
 	var palette = new Rickshaw.Color.Palette();
 	var series = [];
@@ -67,6 +85,7 @@ function render_cpu_percent( data, element )
 		height: height,
 		renderer: 'stack',
 		series: series,
+		interpolation: "linear"
 	} );
 	
 	var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );
@@ -86,15 +105,16 @@ function render_cpu_percent( data, element )
 }
 renderFunctions['cpu_percent'] = render_cpu_percent;
 
-function render_virtual_memory( data, element ) 
+function render_virtual_memory( data, element, time ) 
 {
 	if( data.length < 1 ) return;
 	
 	var types = ['total','available','percent','used','free'];
 	
 	blank = {};
-	for( var t in types ) { blank[t] = 0; }
-	data = add_zero_data_in_gaps( data, blank );
+	for( var i = 0; i < types.length; i++ ) { blank[types[i]] = 0; }
+	console.log( blank );
+	data = add_zero_data_in_gaps( data, blank, time );
 
 	var palette = new Rickshaw.Color.Palette();
 	var series = [];
@@ -116,7 +136,8 @@ function render_virtual_memory( data, element )
 		width: width,
 		height: height,
 		renderer: 'stack',
-		series: series
+		series: series,
+		interpolation: "linear"
 	} );
 	
 	var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );
@@ -136,15 +157,15 @@ function render_virtual_memory( data, element )
 }
 renderFunctions['virtual_memory'] = render_virtual_memory;
 
-function render_swap_memory( data, element ) 
+function render_swap_memory( data, element, time ) 
 {
 	if( data.length < 1 ) return;
 	
 	var types = ['total','used','free','percent','sin','sout'];
 	
 	blank = {};
-	for( var t in types ) { blank[t] = 0; }
-	data = add_zero_data_in_gaps( data );
+	for( var i = 0; i < types.length; i++ ) { blank[types[i]] = 0; }
+	data = add_zero_data_in_gaps( data, blank, time );
 
 	var palette = new Rickshaw.Color.Palette();
 	var series = [];
@@ -165,7 +186,8 @@ function render_swap_memory( data, element )
 		width: width,
 		height: height,
 		renderer: 'stack',
-		series: series
+		series: series,
+		interpolation: "linear"
 	} );
 	
 	var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );
@@ -185,11 +207,11 @@ function render_swap_memory( data, element )
 }
 renderFunctions['swap_memory'] = render_swap_memory;
 
-function render_web_response_time( data, element ) 
+function render_web_response_time( data, element, time ) 
 {
 	if( data.length < 1 ) return;
 	
-	data = add_zero_data_in_gaps( data, 0 );
+	data = add_zero_data_in_gaps( data, 0, time );
 
 	var palette = new Rickshaw.Color.Palette();
 	var series = [];
@@ -207,7 +229,8 @@ function render_web_response_time( data, element )
 		width: width,
 		height: height,
 		renderer: 'stack',
-		series: series
+		series: series,
+		interpolation: "linear"
 	} );
 	
 	var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );
@@ -227,7 +250,7 @@ function render_web_response_time( data, element )
 }
 renderFunctions['web_response_time'] = render_web_response_time;
 
-function render_all_disks( data, element ) 
+function render_all_disks( data, element, time ) 
 {
 	if( data.length < 1 ) return;
 	
@@ -262,8 +285,8 @@ function render_all_disks( data, element )
 	}
 
 	blank = {};
-	for( var t in types ) { blank[t] = 0; }
-	data = add_zero_data_in_gaps( data, blank );
+	for( var i = 0; i < types.length; i++ ) { blank[types[i]] = 0; }
+	data = add_zero_data_in_gaps( data, blank, time );
 
 	var palette = new Rickshaw.Color.Palette();
 	var series = [];
@@ -295,7 +318,8 @@ function render_all_disks( data, element )
 		width: width,
 		height: height,
 		renderer: 'line',
-		series: series
+		series: series,
+		interpolation: "linear"
 	} );
 	
 	var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );

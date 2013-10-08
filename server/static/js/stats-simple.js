@@ -120,13 +120,15 @@ function nodeInfo(data, textStatus, jqXHR)
 
 function graph( selector, nodeName, name, time )
 {
+	if( typeof time === 'undefined' ) time = "hour:1";
+	
 	$.ajax({ 
 		url: "/nodeid/" + nodeName,
 		dataType: "json",
 		success: function(node, textStatus, jqXHR) {
 			var typeUrl = "/typeof/" + name;
 			var dataUrlNoTime = "/data/" + node + "/" + name;
-			var dataUrl = dataUrlNoTime + "/" + (typeof time !== 'undefined' ? time : "hour:1");
+			var dataUrl = dataUrlNoTime + "/" + time;
 			$.ajax({ 
 				url: typeUrl,
 				dataType: "json",
@@ -157,7 +159,7 @@ function graph( selector, nodeName, name, time )
 							html += ' <div class="chart-clear"></div>';
 							$(selector).html( html );
 							$(".time-frame option[value='" + time + "']", selector).attr( "selected", "selected" );
-							renderFunctions[dataType]( data, selector );
+							renderFunctions[dataType]( data, selector, time );
 							
 							$(".time-frame", selector).change(function() {
 								$(".chart-header", selector).append( '<img class="ajax-loader" src="/static/img/ajax-loader.gif"></img>' );
