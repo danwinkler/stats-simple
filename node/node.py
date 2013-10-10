@@ -68,8 +68,9 @@ def get_plugins():
 	for val in cfg['data']:
 		to_dl.append( val[1] + ".py" )
 
-	for val in cfg['auth']:
-		to_dl.append( val[0] + ".py" )
+	if "auth" in cfg:
+		for val in cfg['auth']:
+			to_dl.append( val[0] + ".py" )
 
 	for f in to_dl:
 		t = do_post( "/plugins", { "file": f }, False )
