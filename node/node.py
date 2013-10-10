@@ -79,8 +79,8 @@ def get_plugins():
 		fh.close()
 
 def do_post( url, values, auth=True ):
-	if auth:
-		global cfg
+	global cfg
+	if auth and "auth" in cfg:
 		values['auth'] = get_auth()
 	url = cfg['server'] + url
 	if( "://" not in url ):
