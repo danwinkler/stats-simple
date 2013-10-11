@@ -1,5 +1,4 @@
 from ss_plugin import *
-import psutil
 
 def single_secret_auth_send( options=None ):
 	return options

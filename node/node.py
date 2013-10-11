@@ -2,7 +2,6 @@ import urllib, urllib2
 import time
 import json
 import sys
-import psutil
 import os
 
 def run():
@@ -103,19 +102,19 @@ def get_auth():
 	return json.dumps( auths )
 	
 def get_data():
-	try:
-		global cfg
-		data = []
-		for val in cfg['data']:
+	global cfg
+	data = []
+	for val in cfg['data']:
+		try:
 			d = None
 			if( len(val) == 2 ):
 				d = collectors[val[1]]()
 			else:
 				d = collectors[val[1]](val[2])
 			data.append( { "name": val[0], "type": val[1], "data": d } )
-		return data
-	except KeyError as e:
-		sys.exit( "Incorrect data collector type in node.cfg: " + str(e) )
-	
+		except KeyError as e:
+			print "Incorrect data collector type in node.cfg: " + str( e )
+	return data
+
 run()
 	
