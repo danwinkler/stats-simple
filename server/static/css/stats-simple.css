@@ -52,6 +52,11 @@ body {
 	margin-bottom: 10px;
 }
 
+.info-title {
+	font-size: 22px;
+	margin-bottom: 5px;
+}
+
 .info-item {
 	position: relative;
 	border-bottom: 1px dashed grey;

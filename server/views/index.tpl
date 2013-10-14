@@ -8,8 +8,19 @@
 		<script>
 			var screenInfo = {{!data}};
 			var nodeSelect = {{user_select}};
-			var graphWidth = {{cfg["graph_width"]}};
+			var graphWidth = "{{cfg["graph_width"]}}";
 			var graphHeight = {{cfg["graph_height"]}};
+			
+			if( graphWidth == "device" ) 
+			{
+				graphWidth = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+				//Account for container padding
+				graphWidth -= 22;
+			}
+			else
+			{
+				graphWidth = parseInt( graphWidth );
+			}
 		</script>
 
 		<script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
