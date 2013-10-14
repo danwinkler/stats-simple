@@ -72,10 +72,14 @@ def get_plugins():
 			to_dl.append( val[0] + ".py" )
 
 	for f in to_dl:
-		t = do_post( "/plugins", { "file": f }, False )
-		fh = open( "plugins" + os.sep + f, "w" )
-		fh.write( t )
-		fh.close()
+		try:
+			print "Downloading Plugin: " + f
+			t = do_post( "/plugins", { "file": f }, False )
+			fh = open( "plugins" + os.sep + f, "w" )
+			fh.write( t )
+			fh.close()
+		except Exception, e:
+			print "Could not download plugin: " + f + " :: " + str(e)
 
 def do_post( url, values, auth=True ):
 	global cfg
