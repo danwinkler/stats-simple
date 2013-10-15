@@ -8,9 +8,13 @@ try:
 			response = requests.get(args, verify=False)
 			return response.elapsed.total_seconds()
 		except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError, requests.exceptions.TooManyRedirects, requests.exceptions.Timeout) as e:
-			return 0;
+			print "web_response_time collector: " + str( e )
+			return 0
 		except requests.exceptions.URLRequired:
 			sys.exit( "Invalid URL for web_response_time" )
+		except Exception, e:
+			print "web_response_time collector: " + str( e )
+			return 0
 
 	collectors['web_response_time'] = web_response_time_collector
 except Exception, e:
