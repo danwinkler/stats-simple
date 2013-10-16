@@ -1,8 +1,5 @@
 var node;
 
-var width = 800;
-var height = 200;
-
 var renderFunctions = {};
 
 $(function() {
@@ -96,6 +93,7 @@ function nodesData(data, textStatus, jqXHR)
 function nodeInfo(data, textStatus, jqXHR) 
 {
 	$("#info-list-content").empty();
+	$("#info-list-content").append( '<div class="info-title">' + node + '</div>' );
 	for( var i = 0; i < data.length; i++ )
 	{
 		var c = "info-item-" + data[i]['name'];

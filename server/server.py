@@ -162,7 +162,7 @@ def index(screen=None):
 	options = { 
 		"user_select": json.dumps( screen == None ), 
 		"data": json.dumps( cfg["screens"][screen] ) if (screen!=None and screen in cfg["screens"]) else "[]", 
-		"cfg": cfg,
+		"cfg": parse_query_for_cfg(),
 	}
 	return template("index", options )
 
@@ -171,11 +171,20 @@ def index(screen):
 	arr = json.loads( screen )
 	print arr
 	screen = json.dumps( arr )
-	return template("index", { "user_select": json.dumps( False ), "data": screen, "cfg": cfg } )
+	return template("index", { "user_select": json.dumps( False ), "data": screen, "cfg": parse_query_for_cfg() } )
 
 # ---------------------------------
 # --------HELPER FUNCTIONS---------
 # ---------------------------------
+
+def parse_query_for_cfg():
+	global cfg
+	pcfg = cfg.copy();
+	if request.query.graph_width:
+		pcfg['graph_width'] = request.query.graph_width
+	if request.query.graph_height:
+		pcfg['graph_height'] = request.query.graph_height
+	return pcfg
 
 def email_on_alerts():
 	conn = sqlite3.connect( "db.db" )
