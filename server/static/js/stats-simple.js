@@ -3,6 +3,12 @@ var node;
 var renderFunctions = {};
 
 $(function() {
+
+	if( graphWidth != "device" ) 
+	{
+		graphWidth = parseInt( graphWidth );
+	}
+
 	if( nodeSelect ) 
 	{
 		$("#chart-display").hide();
@@ -167,6 +173,10 @@ function graph( selector, nodeName, name, time )
 									html += ' <div class="chart-clear"></div>';
 									html += ' <div class="chart-timeline"></div>';
 									$(selector).html( html );
+									if( graphWidth == "device" )
+									{
+										$(selector).css( "display", "block" ); 
+									}
 									$(".time-frame option[value='" + time + "']", selector).attr( "selected", "selected" );
 									renderFunctions[dataType]( data, notes, selector, time );
 									$(".time-frame", selector).change(function() {

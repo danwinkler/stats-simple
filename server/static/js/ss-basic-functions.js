@@ -35,6 +35,15 @@ function add_zero_data_in_gaps( data, blank, time )
 	return data;
 }
 
+function getGraphWidth( element )
+{
+	if( graphWidth == "device" )
+	{
+		return $(element).width() - $(".y-axis", element).width();
+	}
+	return graphWidth;
+}
+
 function render_cpu_percent( data, notes, element, time ) 
 {
 	if( data.length < 1 ) return;
@@ -83,7 +92,7 @@ function render_cpu_percent( data, notes, element, time )
 	
 	var graph = new Rickshaw.Graph( {
 		element: $(".chart", element).get(0),
-		width: graphWidth,
+		width: getGraphWidth( element ),
 		height: graphHeight,
 		renderer: 'stack',
 		series: series,
@@ -147,7 +156,7 @@ function render_virtual_memory( data, notes, element, time )
 	
 	var graph = new Rickshaw.Graph( {
 		element: $(".chart", element).get(0),
-		width: graphWidth,
+		width: getGraphWidth( element ),
 		height: graphHeight,
 		renderer: 'stack',
 		series: series,
@@ -209,7 +218,7 @@ function render_swap_memory( data, notes, element, time )
 	
 	var graph = new Rickshaw.Graph( {
 		element: $(".chart", element).get(0),
-		width: graphWidth,
+		width: getGraphWidth( element ),
 		height: graphHeight,
 		renderer: 'stack',
 		series: series,
@@ -264,7 +273,7 @@ function render_web_response_time( data, notes, element, time )
 	
 	var graph = new Rickshaw.Graph( {
 		element: $(".chart", element).get(0),
-		width: graphWidth,
+		width: getGraphWidth( element ),
 		height: graphHeight,
 		renderer: 'stack',
 		series: series,
@@ -376,7 +385,7 @@ function render_all_disks( data, notes, element, time )
 	
 	var graph = new Rickshaw.Graph( {
 		element: $(".chart", element).get(0),
-		width: graphWidth,
+		width: getGraphWidth( element ),
 		height: graphHeight,
 		renderer: 'line',
 		series: series,
