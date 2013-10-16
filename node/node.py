@@ -13,6 +13,7 @@ to_send_lock = threading.RLock()
 def run():
 	global cfg
 	global collectors
+	global annotators
 	global send_auth
 	
 	#OPEN CONFIGURATION FILE
@@ -25,6 +26,7 @@ def run():
 
 	import plugins
 	collectors = plugins.ss_plugin.collectors
+	annotators = plugins.ss_plugin.annotators
 	send_auth = plugins.ss_plugin.send_auth
 
 	server_reg()
@@ -58,10 +60,11 @@ def collect_thread( args ):
 	while True:
 		start_time = time.time()
 		
+		notes = get_notes()
 		data = get_data()
 		t = int(time.time())
 		data = json.dumps( data )
-		to_put = { "name": cfg['name'], "time": t, "data": data }
+		to_put = { "name": cfg['name'], "time": t, "data": data, "notes": json.dumps( notes ) }
 		with to_send_lock:
 			to_send.append( to_put )
 		
@@ -95,6 +98,10 @@ def get_plugins():
 	to_dl = ["__init__.py", "ss_plugin.py"]
 	for val in cfg['data']:
 		to_dl.append( val[1] + ".py" )
+
+	if "annotators" in cfg:
+		for val in cfg['annotators']:
+			to_dl.append( val[0] + ".py" )
 
 	if "auth" in cfg:
 		for val in cfg['auth']:
@@ -148,6 +155,23 @@ def get_data():
 		except KeyError as e:
 			print "Incorrect data collector type in node.cfg: " + str( e )
 	return data
+
+def get_notes():
+	global cfg
+	notes = []
+	if "annotators" in cfg:
+		for val in cfg['annotators']:
+			try:
+				a = None
+				if( len(val) == 1 ):
+					a = annotators[val[0]]()
+				else:
+					a = annotators[val[0]](val[1])
+				for note in a:
+					notes.append( note )
+			except KeyError as e:
+				print "Incorrect annotator type in node.cfg: " + str( e )
+	return notes
 
 run()
 	

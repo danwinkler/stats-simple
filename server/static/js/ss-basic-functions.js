@@ -1,5 +1,7 @@
 function add_zero_data_in_gaps( data, blank, time )
 {
+	if( time == "forever" ) return;
+
 	var timeDict = { "hour": 60*60, "day": 60*60*24, "month": 60*60*24*30, "year": 60*60*24*365 };
 	
 	var now = Math.round(new Date().getTime() / 1000);
@@ -33,7 +35,7 @@ function add_zero_data_in_gaps( data, blank, time )
 	return data;
 }
 
-function render_cpu_percent( data, element, time ) 
+function render_cpu_percent( data, notes, element, time ) 
 {
 	if( data.length < 1 ) return;
 
@@ -100,12 +102,24 @@ function render_cpu_percent( data, element, time )
 	new Rickshaw.Graph.HoverDetail( {
 		graph: graph
 	} );
+
+	var annotator = new Rickshaw.Graph.Annotate({
+		graph: graph,
+		element: $(".chart-timeline", element).get(0)
+	});
+
+	for( var i = 0; i < notes.length; i++ )
+	{
+		var note = notes[i];
+		console.log( note );
+		annotator.add( note['time'], note['note'] );
+	}
 	
 	graph.render();
 }
 renderFunctions['cpu_percent'] = render_cpu_percent;
 
-function render_virtual_memory( data, element, time ) 
+function render_virtual_memory( data, notes, element, time ) 
 {
 	if( data.length < 1 ) return;
 	
@@ -152,12 +166,24 @@ function render_virtual_memory( data, element, time )
 	new Rickshaw.Graph.HoverDetail( {
 		graph: graph
 	} );
+
+	var annotator = new Rickshaw.Graph.Annotate({
+		graph: graph,
+		element: $(".chart-timeline", element).get(0)
+	});
+	
+	for( var i = 0; i < notes.length; i++ )
+	{
+		var note = notes[i];
+		console.log( note );
+		annotator.add( note['time'], note['note'] );
+	}
 	
 	graph.render();
 }
 renderFunctions['virtual_memory'] = render_virtual_memory;
 
-function render_swap_memory( data, element, time ) 
+function render_swap_memory( data, notes, element, time ) 
 {
 	if( data.length < 1 ) return;
 	
@@ -202,12 +228,24 @@ function render_swap_memory( data, element, time )
 	new Rickshaw.Graph.HoverDetail( {
 		graph: graph
 	} );
+
+	var annotator = new Rickshaw.Graph.Annotate({
+		graph: graph,
+		element: $(".chart-timeline", element).get(0)
+	});
+	
+	for( var i = 0; i < notes.length; i++ )
+	{
+		var note = notes[i];
+		console.log( note );
+		annotator.add( note['time'], note['note'] );
+	}
 	
 	graph.render();
 }
 renderFunctions['swap_memory'] = render_swap_memory;
 
-function render_web_response_time( data, element, time ) 
+function render_web_response_time( data, notes, element, time ) 
 {
 	if( data.length < 1 ) return;
 	
@@ -245,12 +283,24 @@ function render_web_response_time( data, element, time )
 	new Rickshaw.Graph.HoverDetail( {
 		graph: graph
 	} );
+
+	var annotator = new Rickshaw.Graph.Annotate({
+		graph: graph,
+		element: $(".chart-timeline", element).get(0)
+	});
+	
+	for( var i = 0; i < notes.length; i++ )
+	{
+		var note = notes[i];
+		console.log( note );
+		annotator.add( note['time'], note['note'] );
+	}
 	
 	graph.render();
 }
 renderFunctions['web_response_time'] = render_web_response_time;
 
-function render_all_disks( data, element, time ) 
+function render_all_disks( data, notes, element, time ) 
 {
 	if( data.length < 1 ) return;
 	
@@ -345,6 +395,18 @@ function render_all_disks( data, element, time )
 	new Rickshaw.Graph.HoverDetail( {
 		graph: graph
 	} );
+
+	var annotator = new Rickshaw.Graph.Annotate({
+		graph: graph,
+		element: $(".chart-timeline", element).get(0)
+	});
+	
+	for( var i = 0; i < notes.length; i++ )
+	{
+		var note = notes[i];
+		console.log( note );
+		annotator.add( note['time'], note['note'] );
+	}
 	
 	graph.render();
 }

@@ -88,7 +88,12 @@ def post_data(db):
 		return json.dumps( { "error": "NO_TIME" } )
 	if not data:
 		return json.dumps( { "error": "NO_DATA" } )
-		
+	
+	if hasattr( request.forms, 'notes' ):
+		notes = json.loads( request.forms.notes )
+		for note in notes:
+			db.execute( 'INSERT into notes (node,note,time) VALUES (?,?,?)', (row['id'],note,int(time)) )
+
 	for d in data:
 		db.execute( 'INSERT into data (node,time,name,type,value) VALUES (?,?,?,?,?)', (row['id'],int(time),d['name'], d['type'],json.dumps( d['data'] )) )
 	return json.dumps( { "success": "VALUES_ENTERED" } )
@@ -108,7 +113,7 @@ def get_data(node,name,time,end,db):
 def get_data(node,name,start,db):
 	timearr = start.split( ":" )
 	if( timearr[0] == "forever" ):
-		return get_data(node,key,db)
+		return get_data(node,name,db)
 	time_ago = time.time() - (time_dict[timearr[0]] * int(timearr[1]))
 	
 	rows = db.execute('SELECT value, time from data where node=? AND name=? AND time >= ?', (int(node),name,time_ago) ).fetchall()
@@ -124,6 +129,27 @@ def get_data(node,name,db):
 	for row in rows:
 		data.append( { "time": row['time'], "value": json.loads( row['value'] ) } )
 	return json.dumps( data )
+
+@app.get("/notes/:node/:start")
+def get_notes(node,start,db):
+	timearr = start.split( ":" )
+	if( timearr[0] == "forever" ):
+		return get_notes(node,db)
+	time_ago = time.time() - (time_dict[timearr[0]] * int(timearr[1]))
+	
+	rows = db.execute('SELECT note, time from notes where node=? AND time >= ?', (int(node),time_ago) ).fetchall()
+	notes = []
+	for row in rows:
+		notes.append( { "time": row['time'], "note": row['note'] } )
+	return json.dumps( notes )
+
+@app.get("/notes/:node")
+def get_notes(node,db):
+	rows = db.execute('SELECT note, time from notes where node=?', (int(node),) ).fetchall()
+	notes = []
+	for row in rows:
+		notes.append( { "time": row['time'], "note": row['note'] } )
+	return json.dumps( notes )
 
 @app.get('/nodes')
 def get_nodes(db):

@@ -120,6 +120,9 @@ function graph( selector, nodeName, name, time )
 {
 	if( typeof time === 'undefined' ) time = "hour:1";
 	
+	//@TODO: figure out how to get out of this callback hell
+
+	//GET ID OF NODE
 	$.ajax({ 
 		url: "/nodeid/" + nodeName,
 		dataType: "json",
@@ -127,41 +130,50 @@ function graph( selector, nodeName, name, time )
 			var typeUrl = "/typeof/" + name;
 			var dataUrlNoTime = "/data/" + node + "/" + name;
 			var dataUrl = dataUrlNoTime + "/" + time;
+			var noteUrl = "/notes/" + node + "/" + time
+			//GET TYPE OF DATA NAME
 			$.ajax({ 
 				url: typeUrl,
 				dataType: "json",
 				success: function(dataType, textStatus, jqXHR) {
+					//GET DATA
 					$.ajax({ 
 						url: dataUrl,
 						dataType: "json",
 						success: function(data, textStatus, jqXHR) {
-							var html = "";
-							html += ' <div class="chart-header">';
-							html += ' 	<div class="chart-title">' + nodeName + ": " + name.replace( /_/g, " " ) + '</div>';
-							html += ' 	<select class="time-frame">';
-							html += ' 		<option value="hour:1">Last Hour</option>';
-							html += ' 		<option value="hour:2">Last 2 Hours</option>';
-							html += ' 		<option value="hour:3">Last 3 Hours</option>';
-							html += ' 		<option value="hour:6">Last 6 Hours</option>';
-							html += ' 		<option value="day:1">Last Day</option>';
-							html += ' 		<option value="day:3">Last 3 Days</option>';
-							html += ' 		<option value="day:7">Last Week</option>';
-							html += ' 		<option value="month:1">Last Month</option>';
-							html += ' 		<option value="month:6">Last 6 Months</option>';
-							html += ' 		<option value="month:12">Last Year</option>';
-							html += ' 		<option value="forever:0">Forever</option>';
-							html += ' 	</select>';
-							html += ' </div>';
-							html += ' <div class="y-axis"></div>';
-							html += ' <div class="chart"></div>';
-							html += ' <div class="chart-clear"></div>';
-							$(selector).html( html );
-							$(".time-frame option[value='" + time + "']", selector).attr( "selected", "selected" );
-							renderFunctions[dataType]( data, selector, time );
-							
-							$(".time-frame", selector).change(function() {
-								$(".chart-header", selector).append( '<img class="ajax-loader" src="/static/img/ajax-loader.gif"></img>' );
-								graph( selector, nodeName, name, $(this).val() );
+							$.ajax({ 
+								url: noteUrl,
+								dataType: "json",
+								success: function(notes, textStatus, jqXHR) {
+									var html = "";
+									html += ' <div class="chart-header">';
+									html += ' 	<div class="chart-title">' + nodeName + ": " + name.replace( /_/g, " " ) + '</div>';
+									html += ' 	<select class="time-frame">';
+									html += ' 		<option value="hour:1">Last Hour</option>';
+									html += ' 		<option value="hour:2">Last 2 Hours</option>';
+									html += ' 		<option value="hour:3">Last 3 Hours</option>';
+									html += ' 		<option value="hour:6">Last 6 Hours</option>';
+									html += ' 		<option value="day:1">Last Day</option>';
+									html += ' 		<option value="day:3">Last 3 Days</option>';
+									html += ' 		<option value="day:7">Last Week</option>';
+									html += ' 		<option value="month:1">Last Month</option>';
+									html += ' 		<option value="month:6">Last 6 Months</option>';
+									html += ' 		<option value="month:12">Last Year</option>';
+									html += ' 		<option value="forever:0">Forever</option>';
+									html += ' 	</select>';
+									html += ' </div>';
+									html += ' <div class="y-axis"></div>';
+									html += ' <div class="chart"></div>';
+									html += ' <div class="chart-clear"></div>';
+									html += ' <div class="chart-timeline"></div>';
+									$(selector).html( html );
+									$(".time-frame option[value='" + time + "']", selector).attr( "selected", "selected" );
+									renderFunctions[dataType]( data, notes, selector, time );
+									$(".time-frame", selector).change(function() {
+										$(".chart-header", selector).append( '<img class="ajax-loader" src="/static/img/ajax-loader.gif"></img>' );
+										graph( selector, nodeName, name, $(this).val() );
+									});
+								}
 							});
 						}
 					});
