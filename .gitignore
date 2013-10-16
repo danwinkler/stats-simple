@@ -38,5 +38,7 @@ nosetests.xml
 node/node.cfg
 node/plugins
 node/plugins/*
+node/node.log
 server/server.cfg
 server/db.db
+server/server.log

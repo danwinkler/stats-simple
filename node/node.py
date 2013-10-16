@@ -3,6 +3,7 @@ import time
 import json
 import sys
 import os
+import logging
 
 import thread
 import threading
@@ -17,11 +18,40 @@ def run():
 	global send_auth
 	
 	#OPEN CONFIGURATION FILE
-	f = open( "node.cfg" )
-	j = f.read()
-	f.close()
-	cfg = json.loads( j )
-	
+	try:
+		f = open( "node.cfg" )
+		j = f.read()
+		f.close()
+	except Exception as e:
+		print "Could not load node.cfg: " + str( e )
+
+	try:
+		cfg = json.loads( j )
+	except Exception as e:
+		print "Could not parse node.cfg: " + str( e )
+
+	#set up logging
+	if "log" in cfg:
+		numeric_level = getattr(logging, cfg["log"].upper(), None)
+		if not isinstance(numeric_level, int):
+			print "Invalid log level, defaulting to INFO"
+			numeric_level = logging.INFO
+	else:
+		numeric_level = logging.INFO
+		
+	logging.basicConfig( level=numeric_level, filename='node.log' )
+
+	root = logging.getLogger()
+
+	ch = logging.StreamHandler(sys.stdout)
+	ch.setLevel(logging.DEBUG)
+	formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+	ch.setFormatter(formatter)
+	root.addHandler(ch)
+
+	logging.info( "Starting node" )
+
+	#setup plugins
 	get_plugins()
 
 	import plugins
@@ -42,18 +72,18 @@ def run():
 				jre = do_post( "/data", data )
 				re = json.loads( jre )
 				if "error" in re:
-					print re['error']
+					logging.error( re['error'] )
 					if( re['error'] == "NO_REG" ):
 						server_reg()
 				elif "success" in re:
-					print "Successfully sent data - " + str(data["time"])
+					logging.info( "Successfully sent data - " + str(data["time"]) )
 					with to_send_lock:
 						to_send.remove( to_send[0] )
 			else:
-				print "Nothing to send"
+				logging.debug( "Nothing to send" )
 			time.sleep( cfg['interval'] / 2 )
 		except (urllib2.HTTPError, IOError) as e:
-			print "Failed to send: " + str(e)
+			logging.error( "Failed to send: " + str(e) )
 			time.sleep( cfg['interval'] / 2 )
 
 def collect_thread( args ):
@@ -68,7 +98,7 @@ def collect_thread( args ):
 		with to_send_lock:
 			to_send.append( to_put )
 		
-		print "Collected Data - " + str(t)
+		logging.info( "Collected Data - " + str(t) )
 		end_time = time.time()
 		time.sleep( cfg['interval'] - (end_time - start_time) )
 
@@ -79,16 +109,17 @@ def server_reg():
 			re = json.loads( jre )
 			if "error" in re:
 				if( re["error"] == "WRONG_AUTH" ):
+					logging.critical( "Authentication failed" )
 					sys.exit( "Authentication failed" )
-				print re['error']
+				logging.error( re['error'] )
 				continue
 			elif 'success' in re:
-				print re['success']
+				logging.info( re['success'] )
 				break
 			else:
-				print "Bad response from server"
+				logging.error( "Bad response from server" )
 		except (urllib2.HTTPError, IOError) as e:
-			print "Failed to Connect, Will try again in 10 seconds: " + str(e)
+			logging.error( "Failed to Connect, Will try again in 10 seconds: " + str(e) )
 			time.sleep( 10 )
 
 def get_plugins():
@@ -109,13 +140,13 @@ def get_plugins():
 
 	for f in to_dl:
 		try:
-			print "Downloading Plugin: " + f
+			logging.info( "Downloading Plugin: " + f )
 			t = do_post( "/plugins", { "file": f }, False )
 			fh = open( "plugins" + os.sep + f, "w" )
 			fh.write( t )
 			fh.close()
 		except Exception, e:
-			print "Could not download plugin: " + f + " :: " + str(e)
+			logging.error( "Could not download plugin: " + f + " :: " + str(e) )
 
 def do_post( url, values, auth=True ):
 	global cfg
@@ -153,7 +184,7 @@ def get_data():
 				d = collectors[val[1]](val[2])
 			data.append( { "name": val[0], "type": val[1], "data": d } )
 		except KeyError as e:
-			print "Incorrect data collector type in node.cfg: " + str( e )
+			logging.error( "Incorrect data collector type in node.cfg: " + str( e ) )
 	return data
 
 def get_notes():
@@ -170,7 +201,7 @@ def get_notes():
 				for note in a:
 					notes.append( note )
 			except KeyError as e:
-				print "Incorrect annotator type in node.cfg: " + str( e )
+				logging.error( "Incorrect annotator type in node.cfg: " + str( e ) )
 	return notes
 
 run()
