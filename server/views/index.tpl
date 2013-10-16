@@ -4,6 +4,12 @@
 		<link href='//fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="{{cfg["webpath"]}}/static/css/rickshaw.css">
 		<link rel="stylesheet" type="text/css" href="{{cfg["webpath"]}}/static/css/stats-simple.css">
+
+		% if "css" in cfg:
+			% for i in cfg["css"]:
+				<link rel="stylesheet" type="text/css" href="{{cfg["webpath"]}}/static/css/{{!i}}">
+			% end
+		% end
 		
 		<script>
 			var screenInfo = {{!data}};
@@ -17,6 +23,13 @@
 		<script src="{{cfg["webpath"]}}/static/js/rickshaw.js"></script>
 		<script src="{{cfg["webpath"]}}/static/js/stats-simple.js"></script>
 		<script src="{{cfg["webpath"]}}/static/js/ss-basic-functions.js"></script>
+
+		% if "js" in cfg:
+			% for i in cfg["js"]:
+				<script src="{{cfg["webpath"]}}/static/js/{{!i}}"></script>
+			% end
+		% end
+
 	</head>
 	<body>
 		<h1>Stats-Simple</h1>

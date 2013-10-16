@@ -10,6 +10,7 @@ import os
 from triggers import *
 import plugins
 import smtplib
+import time
 from email.mime.text import MIMEText
 
 # ----------------------------------
@@ -34,6 +35,7 @@ if "graph_height" not in cfg:
 
 # Trigger Thread
 def trigger_thread( args ):
+	time.sleep( 1 ) #hackety hackety way to make sure that email_on_alerts is defined by the time this runs
 	while True:
 		for t in cfg['triggers']:
 			ss_triggers.triggers[t]()
@@ -157,7 +159,12 @@ def server_static(filename):
 @app.route('/screen/:screen')
 @app.route('/')
 def index(screen=None):
-    return template("index", { "user_select": json.dumps( screen == None ), "data": json.dumps( cfg["screens"][screen] ) if (screen!=None and screen in cfg["screens"]) else "[]", "cfg": cfg } )
+	options = { 
+		"user_select": json.dumps( screen == None ), 
+		"data": json.dumps( cfg["screens"][screen] ) if (screen!=None and screen in cfg["screens"]) else "[]", 
+		"cfg": cfg,
+	}
+	return template("index", options )
 
 @app.route('/custom/:screen')
 def index(screen):
