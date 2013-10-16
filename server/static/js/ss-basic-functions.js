@@ -1,24 +1,28 @@
 function add_zero_data_in_gaps( data, blank, time )
 {
-	if( time == "forever" ) return;
-
 	var timeDict = { "hour": 60*60, "day": 60*60*24, "month": 60*60*24*30, "year": 60*60*24*365 };
 	
 	var now = Math.round(new Date().getTime() / 1000);
 	var timeSpan = time.split( ":" );
-	timeSpan = timeDict[timeSpan[0]] * parseInt(timeSpan[1]);
-	var begin = now-timeSpan;
 	
-	if( data[0]['time'] - begin > 20*60 )
+	//Don't add data at ends if it's forever
+	if( timeSpan[0] != "forever" )
 	{
-		data.splice( 0, 0, {'time':begin, 'value': blank} );
+		timeSpan = timeDict[timeSpan[0]] * parseInt(timeSpan[1]);
+		var begin = now-timeSpan;
+		
+		if( data[0]['time'] - begin > 20*60 )
+		{
+			data.splice( 0, 0, {'time':begin, 'value': blank} );
+		}
+		
+		if( now - data[data.length-1]['time'] > 20*60 )
+		{
+			data.push( {'time':now, 'value': blank} );
+		}
 	}
 	
-	if( now - data[data.length-1]['time'] > 20*60 )
-	{
-		data.push( {'time':now, 'value': blank} );
-	}
-	
+	//Add blanks in gaps
 	for( var i = 0; i < data.length-1; i++ )
 	{
 		var d1 = data[i];
@@ -33,6 +37,47 @@ function add_zero_data_in_gaps( data, blank, time )
 	}
 	
 	return data;
+}
+
+function xAxis( graph )
+{
+	return new Rickshaw.Graph.Axis.Time( { 
+		graph: graph,
+		timeFixture: new Rickshaw.Fixtures.Time.Local()
+	} );
+}
+
+function yAxis( graph, element )
+{
+	return new Rickshaw.Graph.Axis.Y( {
+		graph: graph,
+		orientation: 'left',
+		tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+		element: $(".y-axis", element).get(0),
+	} );
+}
+
+function hoverDetail( graph )
+{
+	new Rickshaw.Graph.HoverDetail( {
+		graph: graph
+	} );
+}
+
+function addNotes( graph, element, notes )
+{
+	var annotator = new Rickshaw.Graph.Annotate({
+		graph: graph,
+		element: $(".chart-timeline", element).get(0)
+	});
+
+	for( var i = 0; i < notes.length; i++ )
+	{
+		var note = notes[i];
+		console.log( note );
+		annotator.add( note['time'], note['note'] );
+	}
+	return annotator;
 }
 
 function getGraphWidth( element )
@@ -99,30 +144,13 @@ function render_cpu_percent( data, notes, element, time )
 		interpolation: "step"
 	} );
 	
-	var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );
+	var x_axis = xAxis( graph );
 
-	var y_axis = new Rickshaw.Graph.Axis.Y( {
-		graph: graph,
-		orientation: 'left',
-		tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-		element: $(".y-axis", element).get(0),
-	} );
-	
-	new Rickshaw.Graph.HoverDetail( {
-		graph: graph
-	} );
+	var y_axis = yAxis( graph, element );
 
-	var annotator = new Rickshaw.Graph.Annotate({
-		graph: graph,
-		element: $(".chart-timeline", element).get(0)
-	});
+	hoverDetail( graph );
 
-	for( var i = 0; i < notes.length; i++ )
-	{
-		var note = notes[i];
-		console.log( note );
-		annotator.add( note['time'], note['note'] );
-	}
+	var annotator = addNotes( graph, element, notes );
 	
 	graph.render();
 }
@@ -163,30 +191,13 @@ function render_virtual_memory( data, notes, element, time )
 		interpolation: "step"
 	} );
 	
-	var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );
+	var x_axis = xAxis( graph );
 
-	var y_axis = new Rickshaw.Graph.Axis.Y( {
-		graph: graph,
-		orientation: 'left',
-		tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-		element: $(".y-axis", element).get(0),
-	} );
+	var y_axis = yAxis( graph, element );
 	
-	new Rickshaw.Graph.HoverDetail( {
-		graph: graph
-	} );
+	hoverDetail( graph );
 
-	var annotator = new Rickshaw.Graph.Annotate({
-		graph: graph,
-		element: $(".chart-timeline", element).get(0)
-	});
-	
-	for( var i = 0; i < notes.length; i++ )
-	{
-		var note = notes[i];
-		console.log( note );
-		annotator.add( note['time'], note['note'] );
-	}
+	var annotator = addNotes( graph, element, notes );
 	
 	graph.render();
 }
@@ -225,30 +236,13 @@ function render_swap_memory( data, notes, element, time )
 		interpolation: "step"
 	} );
 	
-	var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );
+	var x_axis = xAxis( graph );
 
-	var y_axis = new Rickshaw.Graph.Axis.Y( {
-		graph: graph,
-		orientation: 'left',
-		tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-		element: $(".y-axis", element).get(0),
-	} );
+	var y_axis = yAxis( graph, element );
 	
-	new Rickshaw.Graph.HoverDetail( {
-		graph: graph
-	} );
+	hoverDetail( graph );
 
-	var annotator = new Rickshaw.Graph.Annotate({
-		graph: graph,
-		element: $(".chart-timeline", element).get(0)
-	});
-	
-	for( var i = 0; i < notes.length; i++ )
-	{
-		var note = notes[i];
-		console.log( note );
-		annotator.add( note['time'], note['note'] );
-	}
+	var annotator = addNotes( graph, element, notes );
 	
 	graph.render();
 }
@@ -280,30 +274,13 @@ function render_web_response_time( data, notes, element, time )
 		interpolation: "step"
 	} );
 	
-	var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );
+	var x_axis = xAxis( graph );
 
-	var y_axis = new Rickshaw.Graph.Axis.Y( {
-		graph: graph,
-		orientation: 'left',
-		tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-		element: $(".y-axis", element).get(0),
-	} );
+	var y_axis = yAxis( graph, element );
 	
-	new Rickshaw.Graph.HoverDetail( {
-		graph: graph
-	} );
+	hoverDetail( graph );
 
-	var annotator = new Rickshaw.Graph.Annotate({
-		graph: graph,
-		element: $(".chart-timeline", element).get(0)
-	});
-	
-	for( var i = 0; i < notes.length; i++ )
-	{
-		var note = notes[i];
-		console.log( note );
-		annotator.add( note['time'], note['note'] );
-	}
+	var annotator = addNotes( graph, element, notes );
 	
 	graph.render();
 }
@@ -392,30 +369,13 @@ function render_all_disks( data, notes, element, time )
 		interpolation: "step"
 	} );
 	
-	var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );
+	var x_axis = xAxis( graph );
 
-	var y_axis = new Rickshaw.Graph.Axis.Y( {
-		graph: graph,
-		orientation: 'left',
-		tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-		element: $(".y-axis", element).get(0),
-	} );
+	var y_axis = yAxis( graph, element );
 	
-	new Rickshaw.Graph.HoverDetail( {
-		graph: graph
-	} );
+	hoverDetail( graph );
 
-	var annotator = new Rickshaw.Graph.Annotate({
-		graph: graph,
-		element: $(".chart-timeline", element).get(0)
-	});
-	
-	for( var i = 0; i < notes.length; i++ )
-	{
-		var note = notes[i];
-		console.log( note );
-		annotator.add( note['time'], note['note'] );
-	}
+	var annotator = addNotes( graph, element, notes );
 	
 	graph.render();
 }

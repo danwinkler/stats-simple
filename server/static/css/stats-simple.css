@@ -120,6 +120,10 @@ body {
 	width: 30px;
 }
 
+.chart-timeline {
+	margin-left: 30px;
+}
+
 .chart {
 	float: left;
 }
