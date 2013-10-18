@@ -7,9 +7,12 @@ import logging
 
 import thread
 import threading
+import atexit
 
 to_send = []
 to_send_lock = threading.RLock()
+
+shutdown = False
 
 def run():
 	global cfg
@@ -65,7 +68,7 @@ def run():
 	thread.start_new_thread( collect_thread, ("",) )
 
 	#Every once in a while check out the data list and send one of the items in it
-	while True:
+	while not shutdown:
 		try:
 			if len( to_send ) > 0:
 				data = to_send[0]
@@ -81,13 +84,13 @@ def run():
 						to_send.remove( to_send[0] )
 			else:
 				logging.debug( "Nothing to send" )
-			time.sleep( cfg['interval'] / 2 )
+			time.sleep( 3 )
 		except (urllib2.HTTPError, IOError) as e:
 			logging.error( "Failed to send: " + str(e) )
-			time.sleep( cfg['interval'] / 2 )
+			time.sleep( 3 )
 
 def collect_thread( args ):
-	while True:
+	while not shutdown:
 		start_time = time.time()
 		
 		notes = get_notes()
@@ -100,7 +103,7 @@ def collect_thread( args ):
 		
 		logging.info( "Collected Data - " + str(t) )
 		end_sleep = start_time + cfg['interval']
-		while time.time() < end_sleep:
+		while time.time() < end_sleep and not shutdown:
 			time.sleep( 1 )
 
 def server_reg():
@@ -183,7 +186,8 @@ def get_data():
 				d = collectors[val[1]]()
 			else:
 				d = collectors[val[1]](val[2])
-			data.append( { "name": val[0], "type": val[1], "data": d } )
+			if d != None:
+				data.append( { "name": val[0], "type": val[1], "data": d } )
 		except KeyError as e:
 			logging.error( "Incorrect data collector type in node.cfg: " + str( e ) )
 	return data
@@ -204,6 +208,11 @@ def get_notes():
 			except KeyError as e:
 				logging.error( "Incorrect annotator type in node.cfg: " + str( e ) )
 	return notes
+
+def stop_threads():
+	shutdown = True
+
+atexit.register( stop_threads )
 
 run()
 	
