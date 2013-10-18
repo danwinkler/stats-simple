@@ -99,8 +99,9 @@ def collect_thread( args ):
 			to_send.append( to_put )
 		
 		logging.info( "Collected Data - " + str(t) )
-		end_time = time.time()
-		time.sleep( cfg['interval'] - (end_time - start_time) )
+		end_sleep = start_time + cfg['interval']
+		while time.time() < end_sleep:
+			time.sleep( 1 )
 
 def server_reg():
 	while True:
