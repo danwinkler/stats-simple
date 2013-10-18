@@ -183,6 +183,9 @@ function graph( selector, nodeName, name, time )
 										$(".chart-header", selector).append( '<img class="ajax-loader" src="/static/img/ajax-loader.gif"></img>' );
 										graph( selector, nodeName, name, $(this).val() );
 									});
+									$.doTimeout( "refresh-" + selector, 60000, function() {
+										graph( selector, nodeName, name, $(".time-frame", selector).val() );
+									});
 								}
 							});
 						}

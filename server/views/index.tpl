@@ -19,6 +19,7 @@
 		</script>
 
 		<script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+		<script src="{{cfg["webpath"]}}/static/js/dotimeout.min.js"></script>
 		<script src="{{cfg["webpath"]}}/static/js/d3.v3.min.js"></script>
 		<script src="{{cfg["webpath"]}}/static/js/rickshaw.js"></script>
 		<script src="{{cfg["webpath"]}}/static/js/stats-simple.js"></script>
