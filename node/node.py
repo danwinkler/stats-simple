@@ -8,6 +8,8 @@ import logging
 import thread
 import threading
 import atexit
+import signal
+import platform
 
 to_send = []
 to_send_lock = threading.RLock()
@@ -210,9 +212,17 @@ def get_notes():
 	return notes
 
 def stop_threads():
-	shutdown = True
+	global shutdown
+	if not shutdown:
+		logging.info( "Setting Shutdown Flag" )
+		shutdown = True
+
+def signal_handler( signum, frame ):
+	stop_threads()
 
 atexit.register( stop_threads )
+signal.signal( signal.SIGTERM, signal_handler )
+signal.signal( signal.SIGINT, signal_handler )
 
 run()
-	
+logging.info( "EXIT" )
