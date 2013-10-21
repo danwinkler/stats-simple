@@ -7,9 +7,9 @@ try:
 
 	def web_correct_response_collector(args):
 		try:
-			response = urllib2.urlopen('http://docker-registry.appsoma.com:5000')
+			response = urllib2.urlopen(args[0])
 			html = response.read()
-			return 1 if re.search( args, html ) else 0
+			return 1 if re.search( args[1], html ) else 0
 		except Exception as e:
 			logging.error( "web_correct_response: " + str(e) )
 			return 0
