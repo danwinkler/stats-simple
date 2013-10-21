@@ -176,17 +176,17 @@ function render_virtual_memory( data, notes, element, time )
 	for( var i = 0; i < data.length; i++ )
 	{
 		var x = data[i]['time'];
-		var y = data[i]['value']['percent'];
+		var y = data[i]['value']['available'] / (1024*1024);
 		rickData.push( { x: x, y: y } );
 	}
-	series.push( { name: "Percent of Memory Used", data: rickData, color: palette.color() } );
+	series.push( { name: "Avaiable Memory", data: rickData, color: palette.color() } );
 	
 	
 	var graph = new Rickshaw.Graph( {
 		element: $(".chart", element).get(0),
 		width: getGraphWidth( element ),
 		height: graphHeight,
-		renderer: 'stack',
+		renderer: 'line',
 		series: series,
 		interpolation: "step"
 	} );
@@ -222,10 +222,10 @@ function render_swap_memory( data, notes, element, time )
 	for( var i = 0; i < data.length; i++ )
 	{
 		var x = data[i]['time'];
-		var y = data[i]['value']['percent'];
+		var y = data[i]['value']['available'] / (1024*1024);
 		rickData.push( { x: x, y: y } );
 	}
-	series.push( { name: "Percent of Memory Used", data: rickData, color: palette.color() } );
+	series.push( { name: "Available Memory", data: rickData, color: palette.color() } );
 	
 	var graph = new Rickshaw.Graph( {
 		element: $(".chart", element).get(0),
