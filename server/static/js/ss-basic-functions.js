@@ -380,3 +380,41 @@ function render_all_disks( data, notes, element, time )
 	graph.render();
 }
 renderFunctions['all_disks'] = render_all_disks;
+
+function render_float( data, notes, element, time ) 
+{
+	if( data.length < 1 ) return;
+	
+	data = add_zero_data_in_gaps( data, 0, time );
+
+	var palette = new Rickshaw.Color.Palette();
+	var series = [];
+	var rickData = [];
+	for( var i = 0; i < data.length; i++ )
+	{
+		var x = data[i]['time'];
+		var y = data[i]['value'];
+		rickData.push( { x: x, y: y } );
+	}
+	series.push( { name: "Value", data: rickData, color:  'steelblue' } );
+	
+	var graph = new Rickshaw.Graph( {
+		element: $(".chart", element).get(0),
+		width: getGraphWidth( element ),
+		height: graphHeight,
+		renderer: 'stack',
+		series: series,
+		interpolation: "step"
+	} );
+	
+	var x_axis = xAxis( graph );
+
+	var y_axis = yAxis( graph, element );
+	
+	hoverDetail( graph );
+
+	var annotator = addNotes( graph, element, notes );
+	
+	graph.render();
+}
+renderFunctions['web_correct_response'] = render_float;
