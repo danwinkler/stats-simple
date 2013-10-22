@@ -5,6 +5,10 @@ def cpu_load_too_high():
 	nodes = get_nodes()
 	for node in nodes:
 		node_data = latest_node_data( node["id"], "CPU_Load", 30 )
+
+		if len( node_data ) == 0:
+			return
+			
 		data = []
 		for nd in node_data:
 			data.append( sum( nd['value'] ) / float(len( nd['value'] )) )
