@@ -1,6 +1,7 @@
 var node;
 
 var renderFunctions = {};
+var statusFunctions = {};
 
 $(function() {
 
@@ -105,11 +106,13 @@ function nodeInfo(data, textStatus, jqXHR)
 		var c = "info-item-" + data[i]['name'].replace( /\./g, "-" );
 		var html = "";
 		html += '<div class="info-item ' + c + '">';
+		html += '<span class="info-status"><img class="ajax-loader" src="/static/img/ajax-loader.gif"></img></span>'
 		html += '<span class="info-key">' + data[i]['name'].replace(/_/g, " ") + '</span>';
 		html += '<a href="javascript:;" class="info-link">View</a>';
 		html += '</div>';
 		$("#info-list-content").append( html );
 		var url = "/data/"+node+"/"+data[i]['name']+"/"+$("#time-frame").val();
+		//Add click listener
 		$("." + c + " .info-link").on( "click", { dataType: data[i]['type'], dataName: data[i]['name'], url: url }, function( event ) {
 			dataType = event.data.dataType;
 			dataName = event.data.dataName;
@@ -117,9 +120,78 @@ function nodeInfo(data, textStatus, jqXHR)
 			graph( "#chart-display", node, dataName );
 			$("#chart-display").slideDown();
 		});
+		//Fetch info status
+		getStatus( node, data[i]['name'], function( node, dataName, status ) {
+			var c = "info-item-" + dataName.replace( /\./g, "-" );
+			$("." + c + " .info-status").empty().addClass( "info-status-color" ).addClass( "info-status-" + status );
+		} );
 	}
 	$("#info-list-content .info-item").last().addClass( "info-item-last" );
 	$("#info-list").slideDown();
+}
+
+var getNodeId = function( nodeName, callback )
+{
+	$.ajax({ 
+		url: "/nodeid/" + nodeName,
+		dataType: "json",
+		success: function(node, textStatus, jqXHR) {
+			callback( node );
+		}
+	});
+};
+
+var getDataType = function( dataName, callback )
+{
+	$.ajax({ 
+		url: "/typeof/" + dataName,
+		dataType: "json",
+		success: function( dataType, textStatus, jqXHR) {
+			callback( dataType );
+		}
+	});
+};
+
+var getData = function( nodeId, dataName, time, callback )
+{
+	$.ajax({ 
+		url: "/data/" + nodeId + "/" + dataName + "/" + time,
+		dataType: "json",
+		success: function( dataType, textStatus, jqXHR) {
+			callback( dataType );
+		}
+	});
+};
+
+var getNotes = function( nodeId, time, callback )
+{
+	$.ajax({ 
+		url: "/notes/" + nodeId + "/" + time,
+		dataType: "json",
+		success: function( dataType, textStatus, jqXHR) {
+			callback( dataType );
+		}
+	});
+};
+
+function getStatus( nodeName, dataName, callback )
+{
+	var time = "minute:5";
+
+	getNodeId( nodeName, function( nodeId ) { 
+		getDataType( dataName, function( dataType ) {
+			getData( nodeId, dataName, time, function( data ) {
+				try 
+				{
+					callback( nodeName, dataName, statusFunctions[dataType]( data ) );
+				}
+				catch( e )
+				{
+					callback( nodeName, dataName, "grey" );
+				}	
+			});
+		});
+	});
 }
 
 function graph( selector, nodeName, name, time )
@@ -128,70 +200,47 @@ function graph( selector, nodeName, name, time )
 	
 	//@TODO: figure out how to get out of this callback hell
 
-	//GET ID OF NODE
-	$.ajax({ 
-		url: "/nodeid/" + nodeName,
-		dataType: "json",
-		success: function(node, textStatus, jqXHR) {
-			var typeUrl = "/typeof/" + name;
-			var dataUrlNoTime = "/data/" + node + "/" + name;
-			var dataUrl = dataUrlNoTime + "/" + time;
-			var noteUrl = "/notes/" + node + "/" + time
-			//GET TYPE OF DATA NAME
-			$.ajax({ 
-				url: typeUrl,
-				dataType: "json",
-				success: function(dataType, textStatus, jqXHR) {
-					//GET DATA
-					$.ajax({ 
-						url: dataUrl,
-						dataType: "json",
-						success: function(data, textStatus, jqXHR) {
-							$.ajax({ 
-								url: noteUrl,
-								dataType: "json",
-								success: function(notes, textStatus, jqXHR) {
-									var html = "";
-									html += ' <div class="chart-header">';
-									html += ' 	<div class="chart-title">' + nodeName + ": " + name.replace( /_/g, " " ) + '</div>';
-									html += ' 	<select class="time-frame">';
-									html += ' 		<option value="hour:1">Last Hour</option>';
-									html += ' 		<option value="hour:2">Last 2 Hours</option>';
-									html += ' 		<option value="hour:3">Last 3 Hours</option>';
-									html += ' 		<option value="hour:6">Last 6 Hours</option>';
-									html += ' 		<option value="day:1">Last Day</option>';
-									html += ' 		<option value="day:3">Last 3 Days</option>';
-									html += ' 		<option value="day:7">Last Week</option>';
-									html += ' 		<option value="month:1">Last Month</option>';
-									html += ' 		<option value="month:6">Last 6 Months</option>';
-									html += ' 		<option value="month:12">Last Year</option>';
-									html += ' 		<option value="forever:0">Forever</option>';
-									html += ' 	</select>';
-									html += ' </div>';
-									html += ' <div class="y-axis"></div>';
-									html += ' <div class="chart"></div>';
-									html += ' <div class="chart-clear"></div>';
-									html += ' <div class="chart-timeline"></div>';
-									$(selector).html( html );
-									if( graphWidth == "device" )
-									{
-										$(selector).css( "display", "block" ); 
-									}
-									$(".time-frame option[value='" + time + "']", selector).attr( "selected", "selected" );
-									renderFunctions[dataType]( data, notes, selector, time );
-									$(".time-frame", selector).change(function() {
-										$(".chart-header", selector).append( '<img class="ajax-loader" src="/static/img/ajax-loader.gif"></img>' );
-										graph( selector, nodeName, name, $(this).val() );
-									});
-									$.doTimeout( "refresh-" + selector, 60000, function() {
-										graph( selector, nodeName, name, $(".time-frame", selector).val() );
-									});
-								}
-							});
-						}
+	getNodeId( nodeName, function( nodeId ) { 
+		getDataType( name, function( dataType ) {
+			getData( nodeId, name, time, function( data ) {
+				getNotes( nodeId, time, function( notes ) {
+					var html = "";
+					html += ' <div class="chart-header">';
+					html += ' 	<div class="chart-title">' + nodeName + ": " + name.replace( /_/g, " " ) + '</div>';
+					html += ' 	<select class="time-frame">';
+					html += ' 		<option value="hour:1">Last Hour</option>';
+					html += ' 		<option value="hour:2">Last 2 Hours</option>';
+					html += ' 		<option value="hour:3">Last 3 Hours</option>';
+					html += ' 		<option value="hour:6">Last 6 Hours</option>';
+					html += ' 		<option value="day:1">Last Day</option>';
+					html += ' 		<option value="day:3">Last 3 Days</option>';
+					html += ' 		<option value="day:7">Last Week</option>';
+					html += ' 		<option value="month:1">Last Month</option>';
+					html += ' 		<option value="month:6">Last 6 Months</option>';
+					html += ' 		<option value="month:12">Last Year</option>';
+					html += ' 		<option value="forever:0">Forever</option>';
+					html += ' 	</select>';
+					html += ' </div>';
+					html += ' <div class="y-axis"></div>';
+					html += ' <div class="chart"></div>';
+					html += ' <div class="chart-clear"></div>';
+					html += ' <div class="chart-timeline"></div>';
+					$(selector).html( html );
+					if( graphWidth == "device" )
+					{
+						$(selector).css( "display", "block" ); 
+					}
+					$(".time-frame option[value='" + time + "']", selector).attr( "selected", "selected" );
+					renderFunctions[dataType]( data, notes, selector, time );
+					$(".time-frame", selector).change(function() {
+						$(".chart-header", selector).append( '<img class="ajax-loader" src="/static/img/ajax-loader.gif"></img>' );
+						graph( selector, nodeName, name, $(this).val() );
 					});
-				}
+					$.doTimeout( "refresh-" + selector, 60000, function() {
+						graph( selector, nodeName, name, $(".time-frame", selector).val() );
+					});
+				});
 			});
-		}
+		});
 	});
 }

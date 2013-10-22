@@ -18,7 +18,7 @@ from email.mime.text import MIMEText
 # ----------------------------------
 
 # Ugly but whatever
-time_dict = { "hour": 60*60, "day": 60*60*24, "month": 60*60*24*30, "year": 60*60*24*365 }
+time_dict = { "second": 1, "minute": 60, "hour": 60*60, "day": 60*60*24, "month": 60*60*24*30, "year": 60*60*24*365 }
 
 f = open( "server.cfg" )
 j = f.read()

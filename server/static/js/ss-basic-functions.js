@@ -74,7 +74,6 @@ function addNotes( graph, element, notes )
 	for( var i = 0; i < notes.length; i++ )
 	{
 		var note = notes[i];
-		console.log( note );
 		annotator.add( note['time'], note['note'] );
 	}
 	return annotator;
@@ -156,6 +155,29 @@ function render_cpu_percent( data, notes, element, time )
 }
 renderFunctions['cpu_percent'] = render_cpu_percent;
 
+function status_cpu_percent( data )
+{
+	if( data.length < 1 ) return "red";
+
+	var procCount = data[0]['value'].length;
+
+	var count = 0;
+	var amt = 0;
+	for( var j = 0; j < procCount; j++ )
+	{
+		for( var i = 0; i < data.length; i++ )
+		{
+			amt += data[i]['value'][j];
+			count++;
+		}
+	}
+	amt /= count;
+	if( amt > 90 ) return "red";
+	else if( amt > 50 ) return "orange";
+	else return "green";
+}
+statusFunctions['cpu_percent'] = status_cpu_percent;
+
 function render_virtual_memory( data, notes, element, time ) 
 {
 	if( data.length < 1 ) return;
@@ -164,7 +186,6 @@ function render_virtual_memory( data, notes, element, time )
 	
 	blank = {};
 	for( var i = 0; i < types.length; i++ ) { blank[types[i]] = 0; }
-	console.log( blank );
 	data = add_zero_data_in_gaps( data, blank, time );
 
 	var palette = new Rickshaw.Color.Palette();
