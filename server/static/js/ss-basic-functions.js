@@ -155,29 +155,6 @@ function render_cpu_percent( data, notes, element, time )
 }
 renderFunctions['cpu_percent'] = render_cpu_percent;
 
-function status_cpu_percent( data )
-{
-	if( data.length < 1 ) return "red";
-
-	var procCount = data[0]['value'].length;
-
-	var count = 0;
-	var amt = 0;
-	for( var j = 0; j < procCount; j++ )
-	{
-		for( var i = 0; i < data.length; i++ )
-		{
-			amt += data[i]['value'][j];
-			count++;
-		}
-	}
-	amt /= count;
-	if( amt > 90 ) return "red";
-	else if( amt > 50 ) return "orange";
-	else return "green";
-}
-statusFunctions['cpu_percent'] = status_cpu_percent;
-
 function render_virtual_memory( data, notes, element, time ) 
 {
 	if( data.length < 1 ) return;
@@ -224,20 +201,6 @@ function render_virtual_memory( data, notes, element, time )
 }
 renderFunctions['virtual_memory'] = render_virtual_memory;
 
-function status_virtual_memory( data )
-{
-	if( data.length < 1 ) return "red";
-
-	for( var i = 0; i < data.length; i++ )
-	{
-		var y = data[i]['value']['available'] / (1024*1024);
-		if( y < 128 ) return "red";
-		if( y < 512 ) return "orange";
-	}
-	return "green";
-}
-statusFunctions['virtual_memory'] = status_virtual_memory;
-
 function render_swap_memory( data, notes, element, time ) 
 {
 	if( data.length < 1 ) return;
@@ -283,20 +246,6 @@ function render_swap_memory( data, notes, element, time )
 }
 renderFunctions['swap_memory'] = render_swap_memory;
 
-function status_swap_memory( data )
-{
-	if( data.length < 1 ) return "red";
-
-	for( var i = 0; i < data.length; i++ )
-	{
-		var y = data[i]['value']['available'] / (1024*1024);
-		if( y < 128 ) return "red";
-		if( y < 512 ) return "orange";
-	}
-	return "green";
-}
-statusFunctions['swap_memory'] = status_swap_memory;
-
 function render_web_response_time( data, notes, element, time ) 
 {
 	if( data.length < 1 ) return;
@@ -334,20 +283,6 @@ function render_web_response_time( data, notes, element, time )
 	graph.render();
 }
 renderFunctions['web_response_time'] = render_web_response_time;
-
-function status_web_response_time( data )
-{
-	if( data.length < 1 ) return "red";
-
-	for( var i = 0; i < data.length; i++ )
-	{
-		var y = data[i]['value'];
-		if( y == 0 ) return "red";
-		if( y > 1 ) return "orange";
-	}
-	return "green";
-}
-statusFunctions['web_response_time'] = status_web_response_time;
 
 function render_all_disks( data, notes, element, time ) 
 {

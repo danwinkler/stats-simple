@@ -105,6 +105,16 @@ def post_plugins():
 	fh.close()
 	return t
 
+@app.get("/alerts/:start")
+def get_alerts( start, db ):
+	timearr = start.split(":")
+	time_ago = time.time() - (time_dict[timearr[0]] * int(timearr[1]))
+	alerts = db.execute('SELECT * from alerts where time >= ?', (time_ago,) ).fetchall()
+	data = []
+	for row in alerts:
+		data.append( { "time": row['time'], "value": row['value'], "level": row['level'], "name": row['name'] } )
+	return json.dumps( data )
+
 @app.get("/data/:node/:name/:time/:end")
 def get_data(node,name,time,end,db):
 	return "[]"

@@ -3,6 +3,53 @@ body {
 	margin: 10px;
 }
 
+#alerts {
+	padding: 10px;
+	border: 1px solid grey;
+	border-radius: 6px;
+	margin-bottom: 10px;
+	display: none;
+}
+
+.alert-title {
+	font-size: 20px;
+}
+
+.alert {
+	position: relative;
+	border-bottom: 1px dashed grey;
+	height: 22px;
+}
+
+.alert-header {
+	border-bottom: 2px solid grey;
+	height: 22px;
+	margin-bottom: 10px;
+}
+
+.alert-time {
+	position: absolute;
+}
+
+.alert-level {
+	position: absolute;
+	left: 60px;
+}
+
+.alert-name {
+	position: absolute;
+	left: 130px;
+}
+
+.alert-value {
+	position: absolute;
+	left: 300px;
+}
+
+.alert-last {
+	border: none;
+}
+
 #node-list {
 	padding: 10px;
 	border: 1px solid grey;
@@ -74,36 +121,9 @@ body {
 	border: none;
 }
 
-.info-status {
-	position: absolute;
-}
-
-.info-status-color {
-	width: 12px;
-	height: 12px;
-	margin-top: 4px;
-	border-radius: 4px;
-}
-
-.info-status-green {
-	background-color: green;
-}
-
-.info-status-orange {
-	background-color: orange; 
-}
-
-.info-status-red {
-	background-color: red;
-}
-
-.info-status-grey {
-	background-color: grey;
-}
-
 .info-key {
 	position: absolute;
-	left: 20px
+	left: 0px
 }
 
 .info-link {

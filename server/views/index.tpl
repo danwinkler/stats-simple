@@ -34,6 +34,9 @@
 	</head>
 	<body>
 		<h1>Stats-Simple</h1>
+		<div id="alerts">
+			
+		</div>
 		<div id="node-list">
 			<div class="node-item node-item-header">
 				<div class="node-id">ID</div>

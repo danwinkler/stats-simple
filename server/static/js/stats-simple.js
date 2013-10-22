@@ -1,7 +1,6 @@
 var node;
 
 var renderFunctions = {};
-var statusFunctions = {};
 
 $(function() {
 
@@ -9,6 +8,40 @@ $(function() {
 	{
 		graphWidth = parseInt( graphWidth );
 	}
+
+	$.ajax({ 
+		url: "/alerts/hour:12",
+		dataType: "json",
+		success: function( alerts, textStatus, jqXHR) {
+			if( alerts.length > 0 )
+			{
+				$("#alerts").show();
+				$("#alerts").append( '<span class="alert-title">Alerts - Last 12 Hours</span>' );
+				$("#alerts").append( '<div class="alert alert-header">' +
+						'<span class="alert-time">Time</span>' +
+						'<span class="alert-level">Level</span>' +
+						'<span class="alert-name">Name</span>' +
+						'<span class="alert-value">Value</span>' +
+					'</div>' );
+				for( var i = 0; i < alerts.length; i++ )
+				{
+					var alert = alerts[i];
+					html = "";
+					html += '<div class="alert">';
+
+					var date = new Date( alert['time'] * 1000 );
+
+					html += '	<span class="alert-time">' + date.getHours() + ":" + date.getMinutes() + '</span>';
+					html += '	<span class="alert-level">' + alert['level'] + '</span>';
+					html += '	<span class="alert-name">' + alert['name'] + '</span>';
+					html += '	<span class="alert-value">' + alert['value'] + '</span>';
+					html += '</div>';
+					$("#alerts").append( html );
+				}
+				$("#alerts .alert").last().addClass( "alert-last" );
+			}
+		}
+	});
 
 	if( nodeSelect ) 
 	{
@@ -106,7 +139,6 @@ function nodeInfo(data, textStatus, jqXHR)
 		var c = "info-item-" + data[i]['name'].replace( /\./g, "-" );
 		var html = "";
 		html += '<div class="info-item ' + c + '">';
-		html += '<span class="info-status"><img class="ajax-loader" src="/static/img/ajax-loader.gif"></img></span>'
 		html += '<span class="info-key">' + data[i]['name'].replace(/_/g, " ") + '</span>';
 		html += '<a href="javascript:;" class="info-link">View</a>';
 		html += '</div>';
@@ -120,11 +152,6 @@ function nodeInfo(data, textStatus, jqXHR)
 			graph( "#chart-display", node, dataName );
 			$("#chart-display").slideDown();
 		});
-		//Fetch info status
-		getStatus( node, data[i]['name'], function( node, dataName, status ) {
-			var c = "info-item-" + dataName.replace( /\./g, "-" );
-			$("." + c + " .info-status").empty().addClass( "info-status-color" ).addClass( "info-status-" + status );
-		} );
 	}
 	$("#info-list-content .info-item").last().addClass( "info-item-last" );
 	$("#info-list").slideDown();
@@ -173,27 +200,6 @@ var getNotes = function( nodeId, time, callback )
 		}
 	});
 };
-
-function getStatus( nodeName, dataName, callback )
-{
-	var time = "minute:5";
-
-	getNodeId( nodeName, function( nodeId ) { 
-		getDataType( dataName, function( dataType ) {
-			getData( nodeId, dataName, time, function( data ) {
-				try 
-				{
-					callback( nodeName, dataName, statusFunctions[dataType]( data ) );
-				}
-				catch( e )
-				{
-					callback( nodeName, dataName, "grey" );
-					console.log( e.stack );
-				}	
-			});
-		});
-	});
-}
 
 function graph( selector, nodeName, name, time )
 {
