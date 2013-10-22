@@ -188,6 +188,7 @@ function getStatus( nodeName, dataName, callback )
 				catch( e )
 				{
 					callback( nodeName, dataName, "grey" );
+					console.log( e.stack );
 				}	
 			});
 		});
