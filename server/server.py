@@ -90,9 +90,13 @@ def post_data(db):
 		return json.dumps( { "error": "NO_DATA" } )
 	
 	if hasattr( request.forms, 'notes' ):
-		notes = json.loads( request.forms.notes )
-		for note in notes:
-			db.execute( 'INSERT into notes (node,note,time) VALUES (?,?,?)', (row['id'],note,int(time)) )
+		#sometimes you might get non-json as the notes
+		try:
+			notes = json.loads( request.forms.notes )
+			for note in notes:
+				db.execute( 'INSERT into notes (node,note,time) VALUES (?,?,?)', (row['id'],note,int(time)) )
+		except Exception as e:
+			logging.error( "Error in notes: " + str( e ) )
 
 	for d in data:
 		db.execute( 'INSERT into data (node,time,name,type,value) VALUES (?,?,?,?,?)', (row['id'],int(time),d['name'], d['type'],json.dumps( d['data'] )) )
