@@ -297,4 +297,8 @@ def ssprint(text):
 
 if not 'auth' in cfg:
 	ssprint( "WARNING: No authentication is setup." )
-app.run(host=cfg['host'], port=cfg['port'])
+
+if 'server' in cfg:
+	app.run(host=cfg['host'], port=cfg['port'], server=cfg['server'])
+else:
+	app.run(host=cfg['host'], port=cfg['port'])

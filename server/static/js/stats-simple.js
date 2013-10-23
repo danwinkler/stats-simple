@@ -184,8 +184,8 @@ var getData = function( nodeId, dataName, time, callback )
 	$.ajax({ 
 		url: "/data/" + nodeId + "/" + dataName + "/" + time,
 		dataType: "json",
-		success: function( dataType, textStatus, jqXHR) {
-			callback( dataType );
+		success: function( data, textStatus, jqXHR) {
+			callback( data );
 		}
 	});
 };
@@ -195,8 +195,8 @@ var getNotes = function( nodeId, time, callback )
 	$.ajax({ 
 		url: "/notes/" + nodeId + "/" + time,
 		dataType: "json",
-		success: function( dataType, textStatus, jqXHR) {
-			callback( dataType );
+		success: function( notes, textStatus, jqXHR) {
+			callback( notes );
 		}
 	});
 };
@@ -205,8 +205,6 @@ function graph( selector, nodeName, name, time )
 {
 	if( typeof time === 'undefined' ) time = "hour:1";
 	
-	//@TODO: figure out how to get out of this callback hell
-
 	getNodeId( nodeName, function( nodeId ) { 
 		getDataType( name, function( dataType ) {
 			getData( nodeId, name, time, function( data ) {
