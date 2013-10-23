@@ -96,7 +96,7 @@ def post_data(db):
 			for note in notes:
 				db.execute( 'INSERT into notes (node,note,time) VALUES (?,?,?)', (row['id'],note,int(time)) )
 		except Exception as e:
-			logging.error( "Error in notes: " + str( e ) )
+			ssprint( "Error in notes: " + str( e ) + " Request: " + str( request.forms.notes ) )
 
 	for d in data:
 		db.execute( 'INSERT into data (node,time,name,type,value) VALUES (?,?,?,?,?)', (row['id'],int(time),d['name'], d['type'],json.dumps( d['data'] )) )
