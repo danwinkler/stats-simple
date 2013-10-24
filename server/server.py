@@ -250,6 +250,10 @@ def email_on_alerts():
 					break
 				if a['time'] - b['time'] > 20*60:
 					break
+				#this is necessary in the case that the last element has sentmail set
+				if b['sentmail']:
+					send_mail = False
+					break
 			if send_mail:
 				#If we havent sent an email for this type of alert, send an email with all the alerts from the last day
 				email_str = ""
@@ -258,7 +262,8 @@ def email_on_alerts():
 					email_str += datetime.datetime.fromtimestamp(int(row['time'])).strftime('%Y-%m-%d %H:%M:%S')
 					email_str += " " + row['value'] + "\n"
 				send_email( name_row['name'], email_str )
-				db.execute( "UPDATE alerts SET sentmail=1 where id=?", (rows[-1]['id'],))
+			#regardless of whether or not we sent mail, we can set the most recent item in this category to sent
+			db.execute( "UPDATE alerts SET sentmail=1 where id=?", (rows[-1]['id'],))
 	conn.commit()
 	conn.close()
 
