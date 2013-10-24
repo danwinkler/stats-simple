@@ -30,7 +30,7 @@ def latest_notes( node, time_span ):
 	conn.row_factory = sqlite3.Row
 	db = conn.cursor()
 	time_ago = time.time() - time_span
-	rows = db.execute('SELECT note, time from notes where node=? AND time >= ?', (node,name,time_ago) ).fetchall()
+	rows = db.execute('SELECT note, time from notes where node=? AND time >= ?', (node,time_ago) ).fetchall()
 	conn.close()
 	data = []
 	for row in rows:
