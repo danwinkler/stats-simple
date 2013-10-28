@@ -1,4 +1,5 @@
 var node;
+var timeFrame = "hour:1";
 
 var renderFunctions = {};
 
@@ -230,7 +231,7 @@ var getNotes = function( nodeId, time, callback )
 
 function graph( selector, nodeName, name, time )
 {
-	if( typeof time === 'undefined' ) time = "hour:1";
+	if( typeof time === 'undefined' ) time = timeFrame;
 	
 	getNodeId( nodeName, function( nodeId ) { 
 		getDataType( name, function( dataType ) {
@@ -267,6 +268,7 @@ function graph( selector, nodeName, name, time )
 					$(".time-frame", selector).change(function() {
 						$(".chart-header", selector).append( '<img class="ajax-loader" src="/static/img/ajax-loader.gif"></img>' );
 						graph( selector, nodeName, name, $(this).val() );
+						timeFrame = $(this).val();
 					});
 					$.doTimeout( "refresh-" + selector, 60000, function() {
 						graph( selector, nodeName, name, $(".time-frame", selector).val() );
