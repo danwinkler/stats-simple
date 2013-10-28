@@ -37,9 +37,13 @@
 		<div id="alerts">
 			
 		</div>
+		<div id="group-list">
+
+		</div>
 		<div id="node-list">
 			<div class="node-item node-item-header">
 				<div class="node-id">ID</div>
+				<div class="node-group">Group</div>
 				<div class="node-name">Name</div>
 			</div>
 			<div id="node-list-content">Loading...</div>

@@ -47,6 +47,11 @@ $(function() {
 	{
 		$("#chart-display").hide();
 		$("#node-list").show();
+		$("#group-list").show();
+		$.ajax({ url: "/groups",
+			dataType: "json",
+			success: groupData
+		});
 		$.ajax({ url: "/nodes",
 			dataType: "json",
 			success: nodesData
@@ -105,6 +110,27 @@ function chartSelector( node, name )
 	return 'chart-' + node.replace( /\./g, "-" ) + "-" + name.replace( /\./g, "-" );
 }
 
+function groupData(data, textStatus, jqXHR)
+{
+	$("#group-list").empty();
+	for( var i = 0; i < data.length; i++ )
+	{
+		var c = "group-item-" + data[i];
+		var html = "";
+		html += '<span class="group-item ' + c + '">';
+		html += '<a href="javascript:;" class="group-link">' + data[i] + '</a>';
+		html += '</span>';
+		$("#group-list").append( html );
+		$("." + c + " .group-link").on( "click", { group: data[i] }, function( event ) {
+			var url = "/nodes/" + event.data.group;
+			$.ajax({ url: url,
+				dataType: "json",
+				success: nodesData
+			});
+		});
+	}
+}
+
 function nodesData(data, textStatus, jqXHR) 
 {
 	$("#node-list-content").empty();
@@ -114,6 +140,7 @@ function nodesData(data, textStatus, jqXHR)
 		var html = "";
 		html += '<div class="node-item ' + c + '">';
 		html += '<span class="node-id">' + data[i]['id'] + '</span>';
+		html += '<span class="node-group">' + data[i]['group'] + '</span>';
 		html += '<span class="node-name">' + data[i]['name'] + '</span>';
 		html += '<a href="javascript:;" class="node-link">View</a>';
 		html += '</div>';

@@ -56,21 +56,28 @@ app.install(plugin)
 
 @app.post('/register')
 def register(db):
-	if not check_secret():
-		ssprint( "Authentication Failed" )
-		return json.dumps( { "error": "WRONG_AUTH" } )
-	name = request.forms.name
-	if not name:
-		ssprint( "Client tried to register with no name set" )
-		return json.dumps( { "error": "NO_NAME" } )
-	row = db.execute('SELECT * from nodes where name=?', (name,)).fetchone()
-	if row:
-		ssprint( "Register Success: Already Registered: " + str(row['name']) )
-		return json.dumps( { "success": "ALREADY_REGISTERED" } )
-	else:
-		db.execute('INSERT into nodes (name) VALUES (?)', (name,))
-		ssprint( "Register Success: First time register: " + str( name ) )
-		return json.dumps( { "success": "REGISTERED" } )
+	try:
+		if not check_secret():
+			ssprint( "Authentication Failed" )
+			return json.dumps( { "error": "WRONG_AUTH" } )
+		name = request.forms.name
+		if not name:
+			ssprint( "Client tried to register with no name set" )
+			return json.dumps( { "error": "NO_NAME" } )
+		row = db.execute('SELECT * from nodes where name=?', (name,)).fetchone()
+		if row:
+			ssprint( "Register Success: Already Registered: " + str(row['name']) )
+			return json.dumps( { "success": "ALREADY_REGISTERED" } )
+		else:
+			group = ""
+			if hasattr( request.forms, 'group' ):
+				group = request.forms.group
+
+			db.execute('INSERT into nodes (name,node_group) VALUES (?,?)', (name,group))
+			ssprint( "Register Success: First time register: " + str( name ) )
+			return json.dumps( { "success": "REGISTERED" } )
+	except Exception as e:
+		return json.dumps( { "error": str( e ) } )
 
 @app.post('/data')
 def post_data(db):
@@ -167,11 +174,27 @@ def get_notes(node,db):
 
 @app.get('/nodes')
 def get_nodes(db):
-	rows = db.execute('SELECT id,name from nodes').fetchall()
+	rows = db.execute('SELECT id,name,node_group from nodes').fetchall()
 	nodes = []
 	for row in rows:
-		nodes.append( { "id": row['id'], "name": row['name'] } )
+		nodes.append( { "id": row['id'], "name": row['name'], "group": row['node_group'] } )
 	return json.dumps( nodes )
+
+@app.get('/nodes/:group')
+def get_nodes(group,db):
+	rows = db.execute('SELECT id,name,node_group from nodes where node_group=?', (group,)).fetchall()
+	nodes = []
+	for row in rows:
+		nodes.append( { "id": row['id'], "name": row['name'], "group": row['node_group'] } )
+	return json.dumps( nodes )
+
+@app.get('/groups')
+def get_groups(db):
+	rows = db.execute('SELECT DISTINCT node_group from nodes').fetchall()
+	groups = []
+	for row in rows:
+		groups.append( row['node_group'] )
+	return json.dumps( groups )
 	
 @app.get('/nodeid/:name')
 def get_node_id(name,db):

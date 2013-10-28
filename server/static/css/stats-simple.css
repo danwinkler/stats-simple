@@ -50,6 +50,19 @@ body {
 	border: none;
 }
 
+#group-list {
+	padding: 10px;
+	border: 1px solid grey;
+	border-radius: 6px;
+	margin-bottom: 10px;
+	display: none;
+}
+
+.group-item {
+	margin-right: 10px;
+	text-decoration: none;
+}
+
 #node-list {
 	padding: 10px;
 	border: 1px solid grey;
@@ -78,14 +91,19 @@ body {
 	position: absolute;
 }
 
-.node-name {
+.node-group {
 	position: absolute;
 	left: 50px;
 }
 
+.node-name {
+	position: absolute;
+	left: 250px;
+}
+
 .node-link {
 	position: absolute;
-	left: 400px;
+	left: 600px;
 }
 
 .node-link {

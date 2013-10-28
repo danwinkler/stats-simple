@@ -100,6 +100,7 @@ def collect_thread( args ):
 		t = int(time.time())
 		data = json.dumps( data )
 		to_put = { "name": cfg['name'], "time": t, "data": data, "notes": json.dumps( notes ) }
+
 		with to_send_lock:
 			to_send.append( to_put )
 		
@@ -109,21 +110,23 @@ def collect_thread( args ):
 			time.sleep( 1 )
 
 def server_reg():
-	while True:
+	while not shutdown:
 		try:
-			jre = do_post( "/register", { "name": cfg['name'] } )
+			jre = do_post( "/register", { "name": cfg['name'], "group": cfg.get( "group", "" ) } )
 			re = json.loads( jre )
 			if "error" in re:
 				if( re["error"] == "WRONG_AUTH" ):
 					logging.critical( "Authentication failed" )
 					sys.exit( "Authentication failed" )
 				logging.error( re['error'] )
+				time.sleep( 1 )
 				continue
 			elif 'success' in re:
 				logging.info( re['success'] )
 				break
 			else:
 				logging.error( "Bad response from server" )
+				time.sleep( 1 )
 		except (urllib2.HTTPError, IOError) as e:
 			logging.error( "Failed to Connect, Will try again in 10 seconds: " + str(e) )
 			time.sleep( 10 )
