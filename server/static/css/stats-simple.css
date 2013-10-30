@@ -60,6 +60,9 @@ body {
 
 .group-item {
 	margin-right: 10px;
+}
+
+.group-item a {
 	text-decoration: none;
 }
 

@@ -147,6 +147,8 @@ function groupData(data, textStatus, jqXHR)
 
 function nodesData(data, textStatus, jqXHR) 
 {
+	$("#chart-display").slideUp();
+	$("#info-list").slideUp();
 	$("#node-list-content").empty();
 	for( var i = 0; i < data.length; i++ )
 	{
@@ -173,6 +175,7 @@ function nodesData(data, textStatus, jqXHR)
 
 function nodeInfo(data, textStatus, jqXHR) 
 {
+	$("#chart-display").slideUp();
 	$("#info-list-content").empty();
 	$("#info-list-content").append( '<div class="info-title">' + node + '</div>' );
 	for( var i = 0; i < data.length; i++ )
