@@ -65,17 +65,22 @@ def register(db):
 			ssprint( "Client tried to register with no name set" )
 			return json.dumps( { "error": "NO_NAME" } )
 		row = db.execute('SELECT * from nodes where name=?', (name,)).fetchone()
+		group = ""
+		if hasattr( request.forms, 'group' ):
+			group = request.forms.group
+
 		if row:
+			if group != row['node_group']:
+				db.execute( "UPDATE nodes SET node_group=? where id=?", (group, row['id']) )
+
 			ssprint( "Register Success: Already Registered: " + str(row['name']) )
 			return json.dumps( { "success": "ALREADY_REGISTERED" } )
-		else:
-			group = ""
-			if hasattr( request.forms, 'group' ):
-				group = request.forms.group
 
+		else:
 			db.execute('INSERT into nodes (name,node_group) VALUES (?,?)', (name,group))
 			ssprint( "Register Success: First time register: " + str( name ) )
 			return json.dumps( { "success": "REGISTERED" } )
+
 	except Exception as e:
 		return json.dumps( { "error": str( e ) } )
 
