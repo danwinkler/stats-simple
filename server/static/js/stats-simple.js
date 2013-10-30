@@ -114,6 +114,19 @@ function chartSelector( node, name )
 function groupData(data, textStatus, jqXHR)
 {
 	$("#group-list").empty();
+
+	var html = "";
+	html += '<span class="group-item show-all-group-items">';
+	html += '<a href="javascript:;" class="group-link">Show All</a>';
+	html += '</span>';
+	$("#group-list").append( html );
+	$(".show-all-group-items .group-link").on( "click", function() {
+		$.ajax({ url: "/nodes",
+			dataType: "json",
+			success: nodesData
+		});
+	});
+
 	for( var i = 0; i < data.length; i++ )
 	{
 		var c = "group-item-" + data[i];
