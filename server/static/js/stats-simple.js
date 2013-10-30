@@ -229,52 +229,57 @@ var getNotes = function( nodeId, time, callback )
 	});
 };
 
+var getGraph = function( nodeName, dataName, time, callback )
+{
+	$.ajax({ 
+		url: "/graph/" + nodeName + "/" + dataName + "/" + time,
+		dataType: "json",
+		success: function( gdata, textStatus, jqXHR) {
+			callback( gdata );
+		}
+	});
+};
+
 function graph( selector, nodeName, name, time )
 {
 	if( typeof time === 'undefined' ) time = timeFrame;
 	
-	getNodeId( nodeName, function( nodeId ) { 
-		getDataType( name, function( dataType ) {
-			getData( nodeId, name, time, function( data ) {
-				getNotes( nodeId, time, function( notes ) {
-					var html = "";
-					html += ' <div class="chart-header">';
-					html += ' 	<div class="chart-title">' + nodeName + ": " + name.replace( /_/g, " " ) + '</div>';
-					html += ' 	<select class="time-frame">';
-					html += ' 		<option value="hour:1">Last Hour</option>';
-					html += ' 		<option value="hour:2">Last 2 Hours</option>';
-					html += ' 		<option value="hour:3">Last 3 Hours</option>';
-					html += ' 		<option value="hour:6">Last 6 Hours</option>';
-					html += ' 		<option value="day:1">Last Day</option>';
-					html += ' 		<option value="day:3">Last 3 Days</option>';
-					html += ' 		<option value="day:7">Last Week</option>';
-					html += ' 		<option value="month:1">Last Month</option>';
-					html += ' 		<option value="month:6">Last 6 Months</option>';
-					html += ' 		<option value="month:12">Last Year</option>';
-					html += ' 		<option value="forever:0">Forever</option>';
-					html += ' 	</select>';
-					html += ' </div>';
-					html += ' <div class="y-axis"></div>';
-					html += ' <div class="chart"></div>';
-					html += ' <div class="chart-clear"></div>';
-					html += ' <div class="chart-timeline"></div>';
-					$(selector).html( html );
-					if( graphWidth == "device" )
-					{
-						$(selector).css( "display", "block" ); 
-					}
-					$(".time-frame option[value='" + time + "']", selector).attr( "selected", "selected" );
-					renderFunctions[dataType]( data, notes, selector, time );
-					$(".time-frame", selector).change(function() {
-						$(".chart-header", selector).append( '<img class="ajax-loader" src="/static/img/ajax-loader.gif"></img>' );
-						graph( selector, nodeName, name, $(this).val() );
-						timeFrame = $(this).val();
-					});
-					$.doTimeout( "refresh-" + selector, 60000, function() {
-						graph( selector, nodeName, name, $(".time-frame", selector).val() );
-					});
-				});
-			});
+	getGraph( nodeName, name, time, function( gdata ) {
+		var html = "";
+		html += ' <div class="chart-header">';
+		html += ' 	<div class="chart-title">' + nodeName + ": " + name.replace( /_/g, " " ) + '</div>';
+		html += ' 	<select class="time-frame">';
+		html += ' 		<option value="hour:1">Last Hour</option>';
+		html += ' 		<option value="hour:2">Last 2 Hours</option>';
+		html += ' 		<option value="hour:3">Last 3 Hours</option>';
+		html += ' 		<option value="hour:6">Last 6 Hours</option>';
+		html += ' 		<option value="day:1">Last Day</option>';
+		html += ' 		<option value="day:3">Last 3 Days</option>';
+		html += ' 		<option value="day:7">Last Week</option>';
+		html += ' 		<option value="month:1">Last Month</option>';
+		html += ' 		<option value="month:6">Last 6 Months</option>';
+		html += ' 		<option value="month:12">Last Year</option>';
+		html += ' 		<option value="forever:0">Forever</option>';
+		html += ' 	</select>';
+		html += ' </div>';
+		html += ' <div class="y-axis"></div>';
+		html += ' <div class="chart"></div>';
+		html += ' <div class="chart-clear"></div>';
+		html += ' <div class="chart-timeline"></div>';
+		$(selector).html( html );
+		if( graphWidth == "device" )
+		{
+			$(selector).css( "display", "block" ); 
+		}
+		$(".time-frame option[value='" + time + "']", selector).attr( "selected", "selected" );
+		renderFunctions[gdata['dataType']]( gdata['data'], gdata['notes'], selector, time );
+		$(".time-frame", selector).change(function() {
+			$(".chart-header", selector).append( '<img class="ajax-loader" src="/static/img/ajax-loader.gif"></img>' );
+			graph( selector, nodeName, name, $(this).val() );
+			timeFrame = $(this).val();
+		});
+		$.doTimeout( "refresh-" + selector, 60000, function() {
+			graph( selector, nodeName, name, $(".time-frame", selector).val() );
 		});
 	});
 }

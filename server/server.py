@@ -188,6 +188,28 @@ def get_nodes(group,db):
 		nodes.append( { "id": row['id'], "name": row['name'], "group": row['node_group'] } )
 	return json.dumps( nodes )
 
+@app.get('/graph/:nodeName/:dataName/:start')
+def get_graph(nodeName,dataName,start,db):
+	node_id = db.execute('SELECT id from nodes where name=?', (nodeName,)).fetchone()['id']
+	data_type = db.execute('SELECT DISTINCT name, type from data where name=?', (dataName,)).fetchone()['type']
+
+	timearr = start.split( ":" )
+	if( timearr[0] == "forever" ):
+		return get_notes(node,db)
+	time_ago = time.time() - (time_dict[timearr[0]] * int(timearr[1]))
+
+	rows = db.execute('SELECT note, time from notes where node=? AND time >= ?', (int(node_id),time_ago) ).fetchall()
+	notes = []
+	for row in rows:
+		notes.append( { "time": row['time'], "note": row['note'] } )
+
+	rows = db.execute('SELECT value, time from data where node=? AND name=? AND time >= ?', (int(node_id),dataName,time_ago) ).fetchall()
+	data = []
+	for row in rows:
+		data.append( { "time": row['time'], "value": json.loads( row['value'] ) } )
+
+	return json.dumps( { "nodeId": node_id, "dataType": data_type, "notes": notes, "data": data } )
+
 @app.get('/groups')
 def get_groups(db):
 	rows = db.execute('SELECT DISTINCT node_group from nodes').fetchall()
