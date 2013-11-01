@@ -7,7 +7,7 @@ try:
 
 	def web_correct_response_collector(args):
 		try:
-			response = urllib2.urlopen(args[0])
+			response = urllib2.urlopen(args[0], None, timeout=10)
 			html = response.read()
 			return 1 if re.search( args[1], html ) else 0
 		except Exception as e:

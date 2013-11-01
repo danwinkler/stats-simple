@@ -5,7 +5,7 @@ try:
 
 	def web_response_time_collector(args):
 		try:
-			response = requests.get(args, verify=False)
+			response = requests.get(args, verify=False, timeout=10)
 			return response.elapsed.total_seconds()
 		except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError, requests.exceptions.TooManyRedirects, requests.exceptions.Timeout) as e:
 			print "web_response_time collector: " + str( e )
