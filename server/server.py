@@ -1,4 +1,4 @@
-from bottle import route, run, template, request, static_file
+from bottle import route, run, template, request, static_file, response
 from bottle.ext import sqlite
 import bottle
 import json
@@ -46,9 +46,18 @@ def trigger_thread( args ):
 if "triggers" in cfg:
 	thread.start_new_thread( trigger_thread, ("",) )
 
+# ----------------------------------
+# ----------BOTTLE SETUP------------
+# ----------------------------------
+
 app = bottle.Bottle()
 plugin = sqlite.Plugin(dbfile='db.db')
 app.install(plugin)
+
+if cfg.get( "cors", False ):
+	@app.hook('after_request')
+	def enable_cors():
+		response.headers['Access-Control-Allow-Origin'] = '*'
 
 # ---------------------------------
 # -------------ROUTES--------------
