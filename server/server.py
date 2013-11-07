@@ -315,6 +315,7 @@ def email_on_alerts():
 	db = conn.cursor()
 	time_ago = time.time() - (60*60*24)
 	unique_alerts_last_day = db.execute('SELECT DISTINCT name from alerts where time >= ?', (time_ago,) ).fetchall()
+	to_send = []
 	for name_row in unique_alerts_last_day:
 		#Select all alerts from last day
 		rows = db.execute('SELECT id, time, value, sentmail FROM alerts where name = ? AND time >= ?', (name_row['name'], time_ago)).fetchall()
@@ -344,11 +345,13 @@ def email_on_alerts():
 				for row in rows:
 					email_str += datetime.datetime.fromtimestamp(int(row['time'])).strftime('%Y-%m-%d %H:%M:%S')
 					email_str += " " + row['value'] + "\n"
-				send_email( name_row['name'], email_str )
+				to_send.append( [name_row['name'], email_str] )
 			#regardless of whether or not we sent mail, we can set the most recent item in this category to sent
-			db.execute( "UPDATE alerts SET sentmail=1 where id=?", (rows[-1]['id'],))
+			db.execute( "UPDATE alerts SET sentmail=1 where id=?", (rows[-1]['id'],) )
 	conn.commit()
 	conn.close()
+	if len( to_send ) > 0:
+		send_email( ', '.join(d[0] for d in to_send), "\n".join(d[1] for d in to_send) )
 
 def check_secret():
 	global cfg
