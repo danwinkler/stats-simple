@@ -112,7 +112,14 @@ def collect_thread( args ):
 def server_reg():
 	while not shutdown:
 		try:
-			jre = do_post( "/register", { "name": cfg['name'], "group": cfg.get( "group", "" ) } )
+			jre = do_post( "/register", 
+				{ 
+					"name": cfg['name'], 
+					"group": cfg.get( "group", "" ), 
+					"annotators": json.dumps( cfg.get( "annotators", [] ) ), 
+					"collectors": json.dumps( cfg.get( "data", [] ) ) 
+				}
+			)
 			re = json.loads( jre )
 			if "error" in re:
 				if( re["error"] == "WRONG_AUTH" ):

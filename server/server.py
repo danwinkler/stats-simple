@@ -75,18 +75,30 @@ def register(db):
 			return json.dumps( { "error": "NO_NAME" } )
 		row = db.execute('SELECT * from nodes where name=?', (name,)).fetchone()
 		group = ""
+		annotators = "[]"
+		collectors = "[]"
 		if hasattr( request.forms, 'group' ):
 			group = request.forms.group
+		if hasattr( request.forms, 'collectors' ):
+			collectors = request.forms.collectors
+		if hasattr( request.forms, 'annotators' ):
+			annotators = request.forms.annotators
 
 		if row:
 			if group != row['node_group']:
 				db.execute( "UPDATE nodes SET node_group=? where id=?", (group, row['id']) )
 
+			if annotators != row['annotators']:
+				db.execute( "UPDATE nodes SET annotators=? where id=?", (annotators, row['id']) )
+
+			if collectors != row['collectors']:
+				db.execute( "UPDATE nodes SET collectors=? where id=?", (collectors, row['id']) )
+
 			ssprint( "Register Success: Already Registered: " + str(row['name']) )
 			return json.dumps( { "success": "ALREADY_REGISTERED" } )
 
 		else:
-			db.execute('INSERT into nodes (name,node_group) VALUES (?,?)', (name,group))
+			db.execute('INSERT into nodes (name,node_group,annotators,collectors) VALUES (?,?)', (name,group,annotators,collectors))
 			ssprint( "Register Success: First time register: " + str( name ) )
 			return json.dumps( { "success": "REGISTERED" } )
 
@@ -188,18 +200,30 @@ def get_notes(node,db):
 
 @app.get('/nodes')
 def get_nodes(db):
-	rows = db.execute('SELECT id,name,node_group from nodes').fetchall()
+	rows = db.execute('SELECT id,name,node_group,annotators,collectors from nodes').fetchall()
 	nodes = []
 	for row in rows:
-		nodes.append( { "id": row['id'], "name": row['name'], "group": row['node_group'] } )
+		nodes.append( { 
+			"id": row['id'], 
+			"name": row['name'], 
+			"group": row['node_group'], 
+			"annotators": json.loads( row['annotators'] ), 
+			"collectors": json.loads( row['collectors'] ) 
+		} )
 	return json.dumps( nodes )
 
 @app.get('/nodes/:group')
 def get_nodes(group,db):
-	rows = db.execute('SELECT id,name,node_group from nodes where node_group=?', (group,)).fetchall()
+	rows = db.execute('SELECT id,name,node_group,annotators,collectors from nodes where node_group=?', (group,)).fetchall()
 	nodes = []
 	for row in rows:
-		nodes.append( { "id": row['id'], "name": row['name'], "group": row['node_group'] } )
+		nodes.append( { 
+			"id": row['id'], 
+			"name": row['name'], 
+			"group": row['node_group'], 
+			"annotators": json.loads( row['annotators'] ), 
+			"collectors": json.loads( row['collectors'] ) 
+		} )
 	return json.dumps( nodes )
 
 @app.get('/graph/:nodeName/:dataName/:start')
