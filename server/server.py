@@ -203,13 +203,23 @@ def get_nodes(db):
 	rows = db.execute('SELECT id,name,node_group,annotators,collectors from nodes').fetchall()
 	nodes = []
 	for row in rows:
-		nodes.append( { 
+		data = { 
 			"id": row['id'], 
 			"name": row['name'], 
 			"group": row['node_group'], 
-			"annotators": json.loads( row['annotators'] ), 
-			"collectors": json.loads( row['collectors'] ) 
-		} )
+			"annotators": [], 
+			"collectors": [] 
+		}
+		try:
+			data['annotators'] = json.loads( row['annotators'] )
+		except:
+			pass
+		try:
+			data['collectors'] = json.loads( row['collectors'] )
+		except:
+			pass
+			
+		nodes.append( data )
 	return json.dumps( nodes )
 
 @app.get('/nodes/:group')
@@ -217,13 +227,23 @@ def get_nodes(group,db):
 	rows = db.execute('SELECT id,name,node_group,annotators,collectors from nodes where node_group=?', (group,)).fetchall()
 	nodes = []
 	for row in rows:
-		nodes.append( { 
+		data = { 
 			"id": row['id'], 
 			"name": row['name'], 
 			"group": row['node_group'], 
-			"annotators": json.loads( row['annotators'] ), 
-			"collectors": json.loads( row['collectors'] ) 
-		} )
+			"annotators": [], 
+			"collectors": [] 
+		}
+		try:
+			data['annotators'] = json.loads( row['annotators'] )
+		except:
+			pass
+		try:
+			data['collectors'] = json.loads( row['collectors'] )
+		except:
+			pass
+			
+		nodes.append( data )
 	return json.dumps( nodes )
 
 @app.get('/graph/:nodeName/:dataName/:start')
