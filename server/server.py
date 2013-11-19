@@ -98,7 +98,7 @@ def register(db):
 			return json.dumps( { "success": "ALREADY_REGISTERED" } )
 
 		else:
-			db.execute('INSERT into nodes (name,node_group,annotators,collectors) VALUES (?,?)', (name,group,annotators,collectors))
+			db.execute('INSERT into nodes (name,node_group,annotators,collectors) VALUES (?,?,?,?)', (name,group,annotators,collectors))
 			ssprint( "Register Success: First time register: " + str( name ) )
 			return json.dumps( { "success": "REGISTERED" } )
 
