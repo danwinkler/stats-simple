@@ -12,10 +12,16 @@ import plugins
 import smtplib
 import time
 from email.mime.text import MIMEText
+import tools
 
 # ----------------------------------
 # --------------SETUP---------------
 # ----------------------------------
+
+# Create db.db if it doens't exist
+if not os.path.exists( 'db.db' ):
+	print "Database file is not present, creating at db.db"
+	tools.create_db()
 
 # Ugly but whatever
 time_dict = { "second": 1, "minute": 60, "hour": 60*60, "day": 60*60*24, "month": 60*60*24*30, "year": 60*60*24*365 }
@@ -253,7 +259,7 @@ def get_graph(nodeName,dataName,start,db):
 
 	timearr = start.split( ":" )
 	if( timearr[0] == "forever" ):
-		return get_notes(node,db)
+		return get_notes( node_id, db )
 	time_ago = time.time() - (time_dict[timearr[0]] * int(timearr[1]))
 
 	rows = db.execute('SELECT note, time from notes where node=? AND time >= ?', (int(node_id),time_ago) ).fetchall()
