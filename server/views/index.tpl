@@ -3,6 +3,7 @@
 		<title>stats-simple</title>
 		<link href='//fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="{{cfg["webpath"]}}/static/css/rickshaw.css">
+		<link rel="stylesheet" type="text/css" href="{{cfg["webpath"]}}/static/css/jquery.dynatable.css">
 		<link rel="stylesheet" type="text/css" href="{{cfg["webpath"]}}/static/css/stats-simple.css">
 
 		% if "css" in cfg:
@@ -22,6 +23,7 @@
 		<script src="{{cfg["webpath"]}}/static/js/dotimeout.min.js"></script>
 		<script src="{{cfg["webpath"]}}/static/js/d3.v3.min.js"></script>
 		<script src="{{cfg["webpath"]}}/static/js/rickshaw.js"></script>
+		<script src="{{cfg["webpath"]}}/static/js/jquery.dynatable.js"></script>
 		<script src="{{cfg["webpath"]}}/static/js/stats-simple.js"></script>
 		<script src="{{cfg["webpath"]}}/static/js/ss-basic-functions.js"></script>
 
@@ -41,12 +43,16 @@
 
 		</div>
 		<div id="node-list">
-			<div class="node-item node-item-header">
-				<div class="node-id">ID</div>
-				<div class="node-group">Group</div>
-				<div class="node-name">Name</div>
-			</div>
-			<div id="node-list-content">Loading...</div>
+			<table id="node-list-table">
+				<thead class="node-item-header">
+					<th class="node-id">id</th>
+					<th class="node-group">group</th>
+					<th class="node-name">name</th>
+				</thead>
+				<tbody>
+
+				</tbody>
+			</table>
 		</div>
 		<div id="info-list">
 			<div id="info-list-content"></div>

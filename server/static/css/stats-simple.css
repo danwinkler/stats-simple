@@ -74,10 +74,19 @@ body {
 	display: none;
 }
 
+#node-list-table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
 .node-item {
 	position: relative;
 	border-bottom: 1px dashed grey;
 	height: 22px;
+}
+
+.node-item tr {
+	border-bottom: 1px dashed grey;
 }
 
 .node-item-header {
@@ -86,27 +95,31 @@ body {
 	margin-bottom: 10px;
 }
 
+.node-item-header thead {
+	border-bottom: 2px solid grey;
+}
+
 .node-item-last {
 	border: none;
 }
 
 .node-id {
-	position: absolute;
+	width: 50px;
+	text-align: left;
 }
 
 .node-group {
-	position: absolute;
-	left: 50px;
+	width: 200px;
+	text-align: left;
 }
 
 .node-name {
-	position: absolute;
-	left: 250px;
+	width: 350px;
+	text-align: left;
 }
 
 .node-link {
-	position: absolute;
-	left: 600px;
+	text-align: left;
 }
 
 .node-link {

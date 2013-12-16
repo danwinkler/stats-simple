@@ -149,28 +149,61 @@ function nodesData(data, textStatus, jqXHR)
 {
 	$("#chart-display").slideUp();
 	$("#info-list").slideUp();
-	$("#node-list-content").empty();
+	/*
+	var tableData = [];
 	for( var i = 0; i < data.length; i++ )
 	{
-		var c = "node-item-" + data[i]['id'];
-		var html = "";
-		html += '<div class="node-item ' + c + '">';
-		html += '<span class="node-id">' + data[i]['id'] + '</span>';
-		html += '<span class="node-group">' + data[i]['group'] + '</span>';
-		html += '<span class="node-name">' + data[i]['name'] + '</span>';
-		html += '<a href="javascript:;" class="node-link">View</a>';
-		html += '</div>';
-		$("#node-list-content").append( html );
-		$("." + c + " .node-link").on( "click", { node: data[i]['name'], url: "/nodeinfo/"+data[i]['id'] }, function( event ) {
-			node = event.data.node;
-			var url = event.data.url;
-			$.ajax({ url: url,
-				dataType: "json",
-				success: nodeInfo
-			});
-		});
+		var node = data[i];
+		//$("#node-list tbody").append( "<tr><td>" + node['id'] + "</td><td>" + node['name'] + "</td><td>" + node['group'] + "</td></tr>" );
+		tableData.push( { "id": node['id'], "group": node['group'], "name": node['name'] } );
 	}
-	$("#node-list-content .node-item").last().addClass( "node-item-last" );
+	//$("#node-list").dynatable();
+	*/
+	function rowWriter( rowIndex, record, columns, cellWriter ) {
+		var c = "node-item-" + record['id'];
+		var html = "";
+		html += '<tr class="node-item ' + c + '">';
+		html += '<td class="node-id">' + record['id'] + '</td>';
+		html += '<td class="node-group">' + record['group'] + '</td>';
+		html += '<td class="node-name">' + record['name'] + '</td>';
+		html += '<td><a href="javascript:;" class="node-link">View</a></td>';
+		html += '</tr>';
+		return html;
+	}
+
+	function updateEventBindings() {
+		for( var i = 0; i < data.length; i++ )
+		{
+			var c = "node-item-" + data[i]['id'];
+			$("." + c + " .node-link").on( "click", { node: data[i]['name'], url: "/nodeinfo/"+data[i]['id'] }, function( event ) {
+				node = event.data.node;
+				var url = event.data.url;
+				$.ajax({ url: url,
+					dataType: "json",
+					success: nodeInfo
+				});
+			});
+		}
+		$("#node-list-table tbody .node-item").last().addClass( "node-item-last" );
+	}
+
+	$("#node-list-table").dynatable({
+		dataset: {
+			records: data
+		},
+		features: {
+			paginate: false,
+			sort: true,
+			pushState: false,
+			search: true,
+			recordCount: false,
+			perPageSelect: false
+		},
+		writers: {
+			_rowWriter: rowWriter
+		},
+	}).bind( "dynatable:afterUpdate", updateEventBindings );
+	updateEventBindings();
 }
 
 function nodeInfo(data, textStatus, jqXHR) 
