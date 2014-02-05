@@ -40,6 +40,6 @@ def latest_notes( node, time_span ):
 def make_alert( name, value, level ):
 	conn = sqlite3.connect( "db.db" )
 	db = conn.cursor()
-	rows = db.execute('INSERT INTO alerts (name,value,level,time) VALUES (?,?,?,?)', (name,value,level,time.time()) )
+	rows = db.execute('INSERT INTO alerts (name,value,level,time,sentmail) VALUES (?,?,?,?,?)', (name,value,level,time.time(),0) )
 	conn.commit()
 	conn.close()	
